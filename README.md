@@ -1,5 +1,5 @@
 # mltwo-project
-Machine Learning 2 Project: (Intert specific task here)
+Machine Learning 2 Project: (Insert specific task here)
 
 ## Potential Data Sets
 
