@@ -1,29 +1,40 @@
 # mltwo-project
-Machine Learning 2 Project: (Insert specific task here)
+Regression task on quality of red wine based on the physiochemical properties of the wine.
 
-## Potential Data Sets
+## Red wine quality dataset:
+### Source:
 
-### 1. Predict Age of Abalone (Shell Animal)
-[Dataset](https://archive.ics.uci.edu/dataset/1/abalone)
+- Kaggle:  
+    https://www.kaggle.com/datasets/uciml/red-wine-quality-cortez-et-al-2009 
 
+- UCI machine learning repository: 
 
-7 continuous features, 1 categorical, integer target feature (sizes, weights, sex, probably some more)
+    https://archive.ics.uci.edu/dataset/186/wine+quality 
 
+### Synopsis: 
+The dataset contains physiochemical properties of red wine alongside with a quality score 
+(target variable) based on sensory data. The dataset scores are not distributed equally, since 
+there a lot more “normal” quality wines than “poor” or “excellent” quality wines. 
 
-4K observations
+### Number of observations: 1599
 
+### Variables:
 
-realm: biology; minimum preprocessing which is easy to revert and no missing values
+| Variable Name         | Description       | Data type  |
+| :---:                 | :---:             | :---:      |
+| Fixed acidity         |                   | Continuous |
+| Volatile acidity      |                   | Continuous |
+| Citric acid           |                   | Continuous |
+| Residual sugar        |                   | Continuous |
+| Chlorides             |                   | Continuous |
+| Free sulfur dioxide   |                   | Continuous |
+| Total sulfur dioxide  |                   | Continuous |
+| Density               |                   | Continuous |
+| pH                    |                   | Continuous |
+| Sulphates             |                   | Continuous |
+| Alcohol               |                   | Continuous |
+| Quality               | Target variable   | Ordinal    |
 
-
-### 2. Rent Price in Sevilla
-[Dataset](https://www.kaggle.com/datasets/javieradvani/sevilla-housing)
-
-
-10 columns, 6 numeric, 4 as strings (title, #rooms, price, square meters, etc.)
-
-
-1.8K observations
-
-
-realm: housing; some string-columns could be turned into categorical variables which could look good
+## ML Methods for the task:
+- Non-linear models (Spline smoothing) 
+- Pursuit projection regression 
