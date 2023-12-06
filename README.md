@@ -25,7 +25,7 @@ there a lot more “normal” quality wines than “poor” or “excellent” q
 
 | Variable Name         | Description       | Data type  |
 | :---:                 | :---:             | :---:      |
-| Fixed acidity         |                   | Continuous |
+| Fixed acidity         |most acids involved with wine or fixed or nonvolatile (do not evaporate readily) | Continuous |
 | Volatile acidity      |                   | Continuous |
 | Citric acid           |                   | Continuous |
 | Residual sugar        |                   | Continuous |
