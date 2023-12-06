@@ -1,6 +1,9 @@
 # mltwo-project
 Regression task on quality of red wine based on the physiochemical properties of the wine.
 
+## Project report on overleaf:
+Link to edit: https://www.overleaf.com/2127442822sbxtwttkycdr#5c3dcc 
+
 ## Red wine quality dataset:
 ### Source:
 
