@@ -26,12 +26,12 @@ there a lot more “normal” quality wines than “poor” or “excellent” q
 | Variable Name         | Description       | Data type  |
 | :---:                 | :---:             | :---:      |
 | Fixed acidity         |most acids involved with wine or fixed or nonvolatile (do not evaporate readily) | Continuous |
-| Volatile acidity      |                   | Continuous |
-| Citric acid           |                   | Continuous |
-| Residual sugar        |                   | Continuous |
-| Chlorides             |                   | Continuous |
-| Free sulfur dioxide   |                   | Continuous |
-| Total sulfur dioxide  |                   | Continuous |
+| Volatile acidity      |mount of acetic acid in wine, which at too high of levels can lead to an unpleasant, vinegar taste | Continuous |
+| Citric acid           |found in small quantities, citric acid can add 'freshness' and flavor to wines| Continuous |
+| Residual sugar        |amount of sugar remaining after fermentation stops, it's rare to find wines with less than 1 gram/liter and wines with greater than 45 grams/liter are considered sweet | Continuous |
+| Chlorides             |amount of salt in the wine| Continuous |
+| Free sulfur dioxide   |free form of SO2 exists in equilibrium between molecular SO2 (as a dissolved gas) and bisulfite ion; it prevents microbial growth and the oxidation of wine| Continuous |
+| Total sulfur dioxide  |amount of free and bound forms of S02; in low concentrations, SO2 is mostly undetectable in wine, but at free SO2 concentrations over 50 ppm, SO2 becomes evident in the nose and taste of wine| Continuous |
 | Density               |                   | Continuous |
 | pH                    |                   | Continuous |
 | Sulphates             |                   | Continuous |
