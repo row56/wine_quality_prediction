@@ -36,7 +36,7 @@ there a lot more “normal” quality wines than “poor” or “excellent” q
 | pH                    |describes how acidic or basic a wine is on a scale from 0 (very acidic) to 14 (very basic); most wines are between 3-4 on the pH scale, (Paul: pH is logarithmic as far as I know)| Continuous |
 | Sulphates             |a wine additive which can contribute to sulfur dioxide gas (S02) levels, wich acts as an antimicrobial and antioxidant| Continuous |
 | Alcohol               |ethanol| Continuous |
-| Quality               | Target variable   | Ordinal    |
+| Quality               | Target variable   | Discrete    |
 
 ## ML Methods for the task:
 - Non-linear models (Spline smoothing) 
