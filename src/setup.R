@@ -23,10 +23,10 @@ test_indices <- setdiff(remaining_indices, val_indices)
 
 # Create the datasets
 train <- wine_data[train_indices, ]
-val <- wine_data[val_indices, ]
+validation <- wine_data[val_indices, ]
 test <- wine_data[test_indices, ]
 
 # Also clean the environment variables not needed further
-keep_vars <- c("train", "test", "wine_data")
+keep_vars <- c("train", "validation", "test", "wine_data")
 
 rm(list = setdiff(ls(), keep_vars))
