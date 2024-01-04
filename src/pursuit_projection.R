@@ -7,6 +7,22 @@ source("src/setup.R")
 
 # ---- Import libraries --------------------------------------------------------
 
+build_weights <- function(data) {
+    # Create a matrix of weights
+    weights <- c(rep(1, nrow(data)))
+
+    mean_quality <- mean(data$quality)
+
+    # Loop over the weights and data
+    for (i in seq_along(weights)) {
+        # Higher weight for quality that differs from the mean
+        weights[i] <- (data[i]$quality - mean_quality) + 1
+    }
+
+    # Return the weights
+    return(weights)
+}
+
 # ---- Perform pursuit projection ----------------------------------------------
 
 # Tune number of terms
@@ -23,10 +39,12 @@ train_indices <- sample(seq_len(nrow(train)), size = train_size)
 tuning_train <- train[train_indices, ]
 tuning_validation <- train[-train_indices, ]
 
+weights <- build_weights(tuning_train)
+
 # Loop over the number of terms
 for (i in 1:max_terms) {
   # Fit the model
-  ppr.obj <- ppr(formula, data = tuning_train, nterms = i)
+  ppr.obj <- ppr(formula, data = tuning_train, nterms = i, weights = weights)
 
   # Predict on the validation set
   val.ppr <- predict(ppr.obj, newdata = tuning_validation)
@@ -49,8 +67,10 @@ print(paste("Minimum MSE with nterms = ", best_nterms, ": ", best_mse))
 
 # ---- Test final model --------------------------------------------------------
 
+weights <- build_weights(train)
+
 # Fit the model with the best number of terms
-ppr.obj <- ppr(formula, data = train, nterms = best_nterms)
+ppr.obj <- ppr(formula, data = train, nterms = 2)
 
 # Predict on the test set
 predicted_values <- predict(ppr.obj, newdata = test)
