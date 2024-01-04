@@ -3,6 +3,7 @@
 
 # Custom
 .venv/
+.misc/
 
 # History files
 .Rhistory
