@@ -9,25 +9,7 @@ source("src/setup.R")
 
 # ---- Perform pursuit projection ----------------------------------------------
 
-formula <- quality ~ .
-
-ppr.obj = ppr(formula, data = train, nterms = 10)
-
-summary(ppr.obj)
-plot(ppr.obj)
-
-# ---- Perform predictions -----------------------------------------------------
-
-# Predict the quality of the test set
-pred <- predict(ppr.obj, newdata = test)
-
-# Calculate the MSE
-mse <- mean((pred - test$quality)^2)
-
-# Print the MSE
-print(mse)
-
-# ---- Tune the number of terms ------------------------------------------------
+# Tune number of terms
 
 max_terms <- 15
 
@@ -65,7 +47,7 @@ best_nterms <- which.min(mse)
 # Print the minimum MSE
 print(paste("Minimum MSE with nterms = ", best_nterms, ": ", best_mse))
 
-# ---- Final model -------------------------------------------------------------
+# ---- Test final model --------------------------------------------------------
 
 # Fit the model with the best number of terms
 ppr.obj <- ppr(formula, data = train, nterms = best_nterms)
