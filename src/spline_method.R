@@ -11,3 +11,5 @@ source("Setup.R")
 # I would like you to investigate at least 3 spline models using each time a
 # different variable. Perhaps it makes sense to choose variables you think (in
 # advance) will have the biggest non-linear effect on wine quality.
+
+# evtl. PCA?

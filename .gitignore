@@ -1,6 +1,9 @@
 # R-gitignore see:
 # https://github.com/github/gitignore/blob/main/R.gitignore
 
+# Custom
+.venv/
+
 # History files
 .Rhistory
 .Rapp.history
