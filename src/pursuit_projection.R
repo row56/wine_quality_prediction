@@ -11,12 +11,13 @@ build_weights <- function(data) {
     # Create a matrix of weights
     weights <- c(rep(1, nrow(data)))
 
-    mean_quality <- mean(data$quality)
+    counts <- table(data$quality)
+    total <- sum(counts)
 
     # Loop over the weights and data
     for (i in seq_along(weights)) {
         # Higher weight for quality that differs from the mean
-        weights[i] <- (data[i]$quality - mean_quality) + 1
+        weights[i] <- total / counts[as.character(data[i, "quality"])]
     }
 
     # Return the weights
@@ -25,6 +26,8 @@ build_weights <- function(data) {
 
 # ---- Perform pursuit projection ----------------------------------------------
 
+formula <- quality ~ .
+
 # Tune number of terms
 
 max_terms <- 15
@@ -32,25 +35,18 @@ max_terms <- 15
 # Create a vector of MSEs
 mse <- rep(NA, max_terms)
 
-# Create training and validation sets
-train_size <- floor(0.8 * nrow(train))
-train_indices <- sample(seq_len(nrow(train)), size = train_size)
-
-tuning_train <- train[train_indices, ]
-tuning_validation <- train[-train_indices, ]
-
-weights <- build_weights(tuning_train)
+weights <- build_weights(train)
 
 # Loop over the number of terms
 for (i in 1:max_terms) {
-  # Fit the model
-  ppr.obj <- ppr(formula, data = tuning_train, nterms = i, weights = weights)
+    # Fit the model
+    ppr.obj <- ppr(formula, data = train, nterms = i, weights = weights)
 
-  # Predict on the validation set
-  val.ppr <- predict(ppr.obj, newdata = tuning_validation)
+    # Predict on the validation set
+    val.ppr <- predict(ppr.obj, newdata = validation)
 
-  # Compute the validation MSE
-  mse[i] <- mean((tuning_validation$quality - val.ppr)^2)
+    # Compute the validation MSE
+    mse[i] <- mean((validation$quality - val.ppr)^2)
 }
 
 # Plot the MSEs
@@ -67,10 +63,8 @@ print(paste("Minimum MSE with nterms = ", best_nterms, ": ", best_mse))
 
 # ---- Test final model --------------------------------------------------------
 
-weights <- build_weights(train)
-
 # Fit the model with the best number of terms
-ppr.obj <- ppr(formula, data = train, nterms = 2)
+ppr.obj <- ppr(formula, data = train, nterms = best_nterms)
 
 # Predict on the test set
 predicted_values <- predict(ppr.obj, newdata = test)
@@ -95,4 +89,4 @@ abline(h = 0)  # Adds a horizontal line at 0 for reference
 # -> Overfitting to middle area
 
 # ---- Clean up ----------------------------------------------------------------
-rm(list = ls())
+# rm(list = ls())
