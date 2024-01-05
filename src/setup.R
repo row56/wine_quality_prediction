@@ -30,7 +30,6 @@ validation_data <- remaining_data %>%
 
 val_indices <- validation_data$row_index
 
-
 # Stratified sampling of a 20% test set split (50% of 40%)
 # Group and ungroup for easier investigation of the sets
 test_data <- remaining_data[!remaining_data$row_index %in% val_indices, ] %>%
@@ -39,37 +38,16 @@ test_data <- remaining_data[!remaining_data$row_index %in% val_indices, ] %>%
 
 test_indices <- test_data$row_index
 
-
-
-
-# Set the sizes for each dataset
-#train_size <- floor(0.6 * nrow(wine_data))
-#val_size <- floor(0.2 * nrow(wine_data))
-
-# Generate indices for the train set
-#train_indices <- sample(seq_len(nrow(wine_data)), size = train_size)
-
-# Remove the train indices from the data indices
-#remaining_indices <- setdiff(seq_len(nrow(wine_data)), train_indices)
-
-# Generate indices for the validation set from the remaining indices
-#val_indices <- sample(remaining_indices, size = val_size)#
-
-# The test indices are the remaining indices after removing the validation
-# indices
-#test_indices <- setdiff(remaining_indices, val_indices)
-
-
-
-
-
 # Create the datasets
 train <- wine_data[train_indices, ]
 validation <- wine_data[val_indices, ]
 test <- wine_data[test_indices, ]
 
-validation
-test
+# Remove the row index column
+train$row_index <- NULL
+validation$row_index <- NULL
+test$row_index <- NULL
+wine_data$row_index <- NULL
 
 # Also clean the environment variables not needed further
 keep_vars <- c("train", "validation", "test", "wine_data")
