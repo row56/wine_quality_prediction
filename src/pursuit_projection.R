@@ -237,6 +237,26 @@ ppr_smote <- ppr(formula, data = balanced_train,
 # Evaluate the model on the test set
 test_results <- evaluate_model(ppr_smote, test)
 
+# ---- Pursuit projection regression with mixed sampling (under -> over) -------
+
+# Apply SMOTE oversampling per class on the training set
+undersampled_train <- balance_classes_by_undersampling(train, target_size = 300)
+
+balanced_train <- balance_classes_with_smote(undersampled_train)
+
+# Show the class distribution
+table(balanced_train$quality)
+
+# Tune number of terms
+tuning_result <- tune_nterms(formula, balanced_train, validation)
+
+# Fit the model with the best number of terms
+ppr_smote <- ppr(formula, data = balanced_train,
+    nterms = tuning_result$best_nterms)
+
+# Evaluate the model on the test set
+test_results <- evaluate_model(ppr_smote, test)
+
 # ---- Clean up ----------------------------------------------------------------
 if (clean_up) {
     rm(list = ls())
