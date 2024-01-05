@@ -1,4 +1,5 @@
 # ---- Load data and libraries from Setup.R file -------------------------------
+rm(list = ls(all.names = TRUE))
 
 source("src/setup.R")
 clean_up <- FALSE
@@ -107,7 +108,7 @@ tuning_result <- tune_nterms(formula, train, validation)
 ppr_simple <- ppr(formula, data = train, nterms = tuning_result$best_nterms)
 
 # Evaluate the model on the test set
-test_results <- evaluate_model(ppr.obj, test)
+test_results <- evaluate_model(ppr_simple, test)
 
 # Maybe: The model is predicting in range between 5 and 6 often times
 # for the quality, probably since more than 80% of are data are 5 or 6.
@@ -126,7 +127,7 @@ tuning_result <- tune_nterms(formula, train, validation,
 ppr_weighted <- ppr(formula, data = train, nterms = tuning_result$best_nterms)
 
 # Evaluate the model on the test set
-test_results <- evaluate_model(ppr.obj, test)
+test_results <- evaluate_model(ppr_weighted, test)
 
 # Higher MSE, but the model is a little bit better in predicting the minority
 # classes
@@ -139,3 +140,9 @@ test_results <- evaluate_model(ppr.obj, test)
 if (clean_up) {
     rm(list = ls())
 }
+
+
+
+
+
+
