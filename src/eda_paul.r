@@ -1,6 +1,12 @@
+library(gridExtra)
+library(corrplot)
+library(ggplot2)
+
 # EDA Paul
 
 wine_data <- read.csv("mltwo-project/data/winequality-red.csv", sep = ";")
+
+#first glimpse of the data
 head(wine_data, 5)
 
 # check which variables we have
@@ -8,6 +14,7 @@ print(names(wine_data))
 
 # check the distribution of target value "quality"
 quality_counts <- table(wine_data$quality)
+quality_counts
 
 # plot quality:
 hist(wine_data$quality, 
@@ -53,8 +60,6 @@ plot(wine_data$volatile.acidity,
      pch = 16)
 
 # citric acidity
-print(sort(unique(wine_data$citric.acid)))
-
 hist(wine_data$citric.acid, 
      main = "Histogram of citric acid",
      xlab = "Volatile Acidity",
@@ -64,24 +69,30 @@ hist(wine_data$citric.acid,
      border = "black")
 
 # Check correlation map
-library(corrplot)
 cor_matrix <- cor(wine_data)
 corrplot(cor_matrix, method = "color",
          type = "upper",
          order = "hclust",
          tl.cex = 0.7)
 
+#--------------
 
-# create a bunch of violin plots
-library(ggplot2)
+# Set overall plot size
+options(repr.plot.width = 8, repr.plot.height = 36)
 
-ggplot(wine_data, aes(x = factor(quality), y = fixed.acidity, fill = factor(quality))) +
+# Single violin plot
+single_plot <- ggplot(wine_data, aes(x = factor(quality), y = fixed.acidity, fill = factor(quality))) +
   geom_violin(trim = FALSE) +
-  scale_fill_brewer(palette = "Set2") +  # Adjust the color palette as needed
+  scale_fill_brewer(palette = "Set2") +
   labs(title = "Violin Plot of Fixed Acidity by Quality",
        x = "Quality",
-       y = "Fixed Acidity")
+       y = "Fixed Acidity") +
+  theme_minimal()
 
+single_plot
+
+
+# create several violin plots
 variables_to_plot <- colnames(wine_data)[!colnames(wine_data) %in% "quality"]
 
 # Create a list of violin plots for each variable
@@ -95,7 +106,4 @@ violin_plots <- lapply(variables_to_plot, function(variable) {
 })
 
 # Arrange and print the plots
-library(gridExtra)
-grid.arrange(grobs = violin_plots, ncol = 1)
-
-
+grid.arrange(grobs = violin_plots, ncol = 2, heights = c(4, 4, 4, 4, 4, 4))
