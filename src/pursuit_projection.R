@@ -47,6 +47,35 @@ balance_classes_with_smote <- function(df) {
     return(balanced_df)
 }
 
+balance_classes_by_undersampling <- function(df, target_size = 0) {
+    target <- df[["quality"]]
+
+    # Determine the target size (size of the smallest class)
+    if (target_size == 0) {
+        target_size <- min(table(target))
+    }
+
+    # Initialize an empty dataframe for the balanced dataset
+    balanced_df <- df[0, ] # Creates an empty dataframe with same columns as df
+
+    # Loop through each class
+    for(class in unique(target)) {
+        class_data <- df[target == class, ]
+
+        # Randomly sample instances if the class is larger than the target size
+        if (nrow(class_data) > target_size) {
+            undersampled_data <- class_data[sample(nrow(class_data),
+                                             target_size), ]
+        } else {
+            undersampled_data <- class_data
+        }
+
+        balanced_df <- rbind(balanced_df, undersampled_data)
+    }
+
+    return(balanced_df)
+}
+
 build_weights <- function(data) {
     # Create a matrix of weights
     weights <- c(rep(1, nrow(data)))
@@ -176,6 +205,27 @@ test_results <- evaluate_model(ppr_weighted, test)
 
 # Apply SMOTE oversampling per class on the training set
 balanced_train <- balance_classes_with_smote(train)
+
+# Show the class distribution
+table(balanced_train$quality)
+
+# Tune number of terms
+tuning_result <- tune_nterms(formula, balanced_train, validation)
+
+# Fit the model with the best number of terms
+ppr_smote <- ppr(formula, data = balanced_train,
+    nterms = tuning_result$best_nterms)
+
+# Evaluate the model on the test set
+test_results <- evaluate_model(ppr_smote, test)
+
+# ---- Pursuit projection regression with undersampling ------------------------
+
+# Apply SMOTE oversampling per class on the training set
+balanced_train <- balance_classes_by_undersampling(train)
+
+# Show the class distribution
+table(balanced_train$quality)
 
 # Tune number of terms
 tuning_result <- tune_nterms(formula, balanced_train, validation)
