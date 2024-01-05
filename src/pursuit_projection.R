@@ -1,12 +1,51 @@
 # ---- Load data and libraries from Setup.R file -------------------------------
-rm(list = ls(all.names = TRUE))
 
 source("src/setup.R")
 clean_up <- FALSE
 
 # ---- Import libraries --------------------------------------------------------
 
+library(smotefamily)
+library(caret)
+
 # ---- Define functions --------------------------------------------------------
+
+balance_classes_with_smote <- function(df) {
+    features <- df[, !names(df) %in% "quality"]
+    target <- df[["quality"]]
+
+    # Determine the target size (size of the largest class)
+    target_size <- max(table(target))
+
+    # Initialize an empty dataframe for the balanced dataset
+    balanced_df <- df[0, ]
+
+    # Loop through each class
+    for (class in unique(target)) {
+        class_data <- df[target == class, ]
+
+        if (nrow(class_data) < target_size) {
+            # Calculate the number of synthetic samples needed
+            dup_size <- ((target_size - nrow(class_data))
+                / nrow(class_data))
+
+            # Apply SMOTE
+            oversampled_data <- SMOTE(features[target == class, ],
+                target[target == class], K = 2, dup_size = dup_size)$data
+
+            colnames(oversampled_data) <- colnames(balanced_df)
+
+            # Combine the oversampled data
+            balanced_df <- rbind(balanced_df, oversampled_data)
+        } else {
+            balanced_df <- rbind(balanced_df, class_data)
+        }
+    }
+
+    balanced_df <- data.frame(lapply(balanced_df, as.numeric))
+
+    return(balanced_df)
+}
 
 build_weights <- function(data) {
     # Create a matrix of weights
@@ -58,8 +97,8 @@ tune_nterms <- function(formula, train_data, val_data, max_terms = 15,
     }
 
     # Store the weights in the environment so ppr() can access them
-    weights_in_env <- NULL
-    weights_in_env <<- weights
+    weights_in_globenv <- NULL
+    weights_in_globenv <<- weights
 
     # Create a vector of MSEs
     mse <- rep(0, max_terms)
@@ -68,7 +107,7 @@ tune_nterms <- function(formula, train_data, val_data, max_terms = 15,
     for (i in 1:max_terms) {
 
         # Fit the model
-        ppr_obj <- ppr(formula, train_data, weights = weights_in_env,
+        ppr_obj <- ppr(formula, train_data, weights = weights_in_globenv,
             nterms = i)
 
         # Predict on the validation set
@@ -78,8 +117,9 @@ tune_nterms <- function(formula, train_data, val_data, max_terms = 15,
         mse[i] <- mean((val_data$quality - val_ppr)^2)
     }
 
-    if (exists("weights_in_env", envir = .GlobalEnv)) {
-        rm(weights_in_env, pos = ".GlobalEnv")
+    # Remove the weights from the environment
+    if (exists("weights_in_globenv", envir = .GlobalEnv)) {
+        rm(weights_in_globenv, pos = ".GlobalEnv")
     }
 
     # Plot the MSEs
@@ -132,17 +172,22 @@ test_results <- evaluate_model(ppr_weighted, test)
 # Higher MSE, but the model is a little bit better in predicting the minority
 # classes
 
-# ---- Pursuit projection regression with stratified sampling ------------------
+# ---- Pursuit projection regression with oversampling using SMOTE--------------
 
-# TODO
+# Apply SMOTE oversampling per class on the training set
+balanced_train <- balance_classes_with_smote(train)
+
+# Tune number of terms
+tuning_result <- tune_nterms(formula, balanced_train, validation)
+
+# Fit the model with the best number of terms
+ppr_smote <- ppr(formula, data = balanced_train,
+    nterms = tuning_result$best_nterms)
+
+# Evaluate the model on the test set
+test_results <- evaluate_model(ppr_smote, test)
 
 # ---- Clean up ----------------------------------------------------------------
 if (clean_up) {
     rm(list = ls())
 }
-
-
-
-
-
-
