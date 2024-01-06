@@ -70,6 +70,8 @@ balance_classes_by_undersampling <- function(df, target_size = 0) { # nolint
 }
 
 build_weights <- function(data) {
+    # Inverse frequency weightinghow 
+
     # Create a matrix of weights
     weights <- c(rep(1, nrow(data)))
 
@@ -87,13 +89,22 @@ build_weights <- function(data) {
 }
 
 evaluate_model <- function(model, data, title_suffix = "") {
+
+    # Get the predictors
+    predictors <- data[, !names(data) %in% "quality"]
+
     # Predict on the data
-    predicted_values <- predict(model, newdata = data)
+    predicted_values <- data.frame(predict(model, newdata = predictors))
+
+    if (exists("y", where = predicted_values)) {
+        # Case for smooth.spline
+        predicted_values <- predicted_values[, "y"]
+    }
 
     # Assuming 'original_data' is your original dataset with the discrete target
     # and 'predictions' are your PPR predictions
     combined_data <- data.frame(Actual = data$quality,
-                                Predicted = predicted_values)
+        Predicted = as.numeric(predicted_values[[1]]))
 
     # Create a violin plot
     plot <- ggplot(combined_data,
@@ -112,18 +123,18 @@ evaluate_model <- function(model, data, title_suffix = "") {
     print(plot)
 
     # Compute the MSE
-    mse <- mean((data$quality - predicted_values)^2)
+    mse <- mean((combined_data$Actual - combined_data$Predicted)^2)
 
     # Print the MSE
     print(paste("Test MSE (", title_suffix, "): ", mse, sep = ""))
 
     # Compute Huber Loss
-    huber_loss <- huber_loss_vec(data$quality, predicted_values)
+    huber_loss <- huber_loss_vec(combined_data$Actual, combined_data$Predicted)
 
     # Print the Huber Loss
     print(paste("Test Huber Loss (", title_suffix, "): ", huber_loss, sep = ""))
 
     # Return the Predicted Values, MSE and Huber Losses
-    return(list(mse = mse, huber_loss = huber_loss,
-        predicted_values = predicted_values))
+    invisible(list(mse = mse, huber_loss = huber_loss,
+        predicted_values = combined_data$Predicted))
 }

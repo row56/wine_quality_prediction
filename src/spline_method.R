@@ -13,8 +13,8 @@ library(gridExtra)
 library(splines)
 library(caret)
 
-source("/Users/pwecker/dev/mltwo-project/src/setup.R")
-source("/Users/pwecker/dev/mltwo-project/src/helper_functions.R")
+source("src/setup.R")
+source("src/helper_functions.R")
 
 
 # 2. Load data, use PCA to construct predictor variable "PC1"----
@@ -49,7 +49,7 @@ print(violin_plot)
 spline_unweighted <- smooth.spline(train_pca$PC1,
                                    train_pca$quality)
 
-weigths <- build_weights(train_pca)
+weights <- build_weights(train_pca)
 spline_weighted <- smooth.spline(train_pca$PC1,
                                  train$quality,
                                  w = weights)
@@ -97,21 +97,9 @@ print(scatter_plot)
 
 
 # trying out evaluation method
-evaluate_model(spline_unweighted)
+evaluate_model(spline_unweighted, data_pca_validation[, c("PC1", "quality")])
 
-evaluate_model(spline_weighted, data_pca_validation)
-
-
-
-
-
-
-
-
-
-
-
-
+evaluate_model(spline_weighted, data_pca_validation[, c("PC1", "quality")])
 
 # check the model performance on the validation set
 vals <- validation[, !colnames(wine_data) %in% "quality"]
