@@ -48,7 +48,7 @@ balance_classes_with_smote <- function(df) {
     return(balanced_df)
 }
 
-balance_classes_by_undersampling <- function(df, target_size = 0) {
+balance_classes_by_undersampling <- function(df, target_size = 0) { # nolint
     target <- df[["quality"]]
 
     # Determine the target size (size of the smallest class)
@@ -60,7 +60,7 @@ balance_classes_by_undersampling <- function(df, target_size = 0) {
     balanced_df <- df[0, ] # Creates an empty dataframe with same columns as df
 
     # Loop through each class
-    for(class in unique(target)) {
+    for (class in unique(target)) {
         class_data <- df[target == class, ]
 
         # Randomly sample instances if the class is larger than the target size
@@ -105,7 +105,7 @@ evaluate_model <- function(model, data) {
 
     # Create a violin plot
     plot <- ggplot(combined_data,
-            aes(x = factor(Actual), y = Predicted, fill = factor(Actual))) +
+Lint            aes(x = factor(Actual), y = Predicted, fill = factor(Actual))) + # nolint
             geom_violin(trim = FALSE) +
             geom_abline(slope = 1, intercept = min(combined_data$Actual) - 1,
                 color = "red") +
