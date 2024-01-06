@@ -75,7 +75,8 @@ tuning_result <- tune_nterms(formula, train, validation,
 ppr_simple <- ppr(formula, data = train, nterms = tuning_result$best_nterms)
 
 # Evaluate the model on the test set
-test_results <- evaluate_model(ppr_simple, test, title_suffix = "Simple")
+test_results <- evaluate_model(ppr_simple, test,
+    title = "Simple PPR with HPO on nterms")
 
 # Maybe: The model is predicting in range between 5 and 6 often times
 # for the quality, probably since more than 80% of are data are 5 or 6.
@@ -95,7 +96,7 @@ ppr_weighted <- ppr(formula, data = train, nterms = tuning_result$best_nterms)
 
 # Evaluate the model on the test set
 test_results <- evaluate_model(ppr_weighted, test,
-    title_suffix = "Weighted")
+    title = "PPR with inverse frequency weights")
 
 # Higher MSE, but the model is a little bit better in predicting the minority
 # classes
@@ -118,7 +119,7 @@ ppr_smote <- ppr(formula, data = balanced_train,
 
 # Evaluate the model on the test set
 test_results <- evaluate_model(ppr_smote, test,
-    title_suffix = "SMOTE Oversampling")
+    title = "PPR with SMOTE Oversampling")
 
 # ---- Pursuit projection regression with undersampling ------------------------
 
@@ -137,7 +138,8 @@ ppr_smote <- ppr(formula, data = balanced_train,
     nterms = tuning_result$best_nterms)
 
 # Evaluate the model on the test set
-test_results <- evaluate_model(ppr_smote, test, title_suffix = "Undersampling")
+test_results <- evaluate_model(ppr_smote, test,
+    title = "PPR with Undersampling")
 
 # ---- Pursuit projection regression with mixed sampling (under -> over) -------
 
@@ -157,7 +159,8 @@ ppr_smote <- ppr(formula, data = balanced_train,
     nterms = tuning_result$best_nterms)
 
 # Evaluate the model on the test set
-test_results <- evaluate_model(ppr_smote, test, title_suffix = "Mixed Sampling")
+test_results <- evaluate_model(ppr_smote, test, 
+    title = "PPR with Mixed Sampling")
 
 # ---- Pursuit projection regression with mixed sampling (under -> over) -------
 
@@ -181,7 +184,7 @@ ppr_smote <- ppr(formula, data = balanced_train,
 
 # Evaluate the model on the test set
 test_results <- evaluate_model(ppr_smote, test,
-    title_suffix = "Mixed Sampling with weights")
+    title = "PPR with Mixed Sampling and Weights")
 
 # ---- Clean up ----------------------------------------------------------------
 if (clean_up) {

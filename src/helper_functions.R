@@ -2,6 +2,7 @@ library(smotefamily)
 library(caret)
 library(ggplot2)
 library(yardstick)
+library(dplyr)
 
 balance_classes_with_smote <- function(df) {
     features <- df[, !names(df) %in% "quality"]
@@ -98,7 +99,7 @@ build_weights <- function(data) {
     return(weights)
 }
 
-evaluate_model <- function(model, data, title_suffix = "") {
+evaluate_model <- function(model, data, title = "") {
 
     # Get the predictors
     predictors <- data[, !names(data) %in% "quality"]
@@ -116,33 +117,94 @@ evaluate_model <- function(model, data, title_suffix = "") {
     combined_data <- data.frame(Actual = data$quality,
         Predicted = as.numeric(predicted_values[[1]]))
 
-    # Create a violin plot
-    plot <- ggplot(combined_data,
-            aes(x = factor(Actual), y = Predicted, fill = factor(Actual))) + # nolint
-            geom_violin(trim = FALSE) +
-            geom_abline(slope = 1, intercept = min(combined_data$Actual) - 1,
-                color = "red") +
-            scale_fill_brewer(palette = "Set2") +
-            labs(title = paste("Violin plot of predicted test values (",
-                title_suffix, ")"),
-                x = "Actual Qualites",
-                y = "Predicted Values") +
-            theme(plot.title = element_text(hjust = 0.5, size = 20))
+    data_count <- combined_data %>%
+        group_by(Actual) %>%
+        summarize(count = n())
 
-    # Show the plot
-    print(plot)
+    # Calculate the median for each group
+    medians <- combined_data %>%
+        group_by(Actual) %>%
+        summarize(median_value = median(Predicted))
+
+    combined_data <- merge(merge(combined_data, data_count, by = "Actual")
+                            , medians, by = "Actual")
 
     # Compute the MSE
     mse <- mean((combined_data$Actual - combined_data$Predicted)^2)
 
     # Print the MSE
-    print(paste("Test MSE (", title_suffix, "): ", mse, sep = ""))
+    print(paste("Test MSE (", title, "): ", mse, sep = ""))
 
     # Compute Huber Loss
     huber_loss <- huber_loss_vec(combined_data$Actual, combined_data$Predicted)
 
     # Print the Huber Loss
-    print(paste("Test Huber Loss (", title_suffix, "): ", huber_loss, sep = ""))
+    print(paste("Test Huber Loss (", title, "): ", huber_loss, sep = ""))
+
+    # Create a violin plot
+    plot <- ggplot(
+                combined_data,
+                aes(x = factor(Actual), y = Predicted, fill = factor(Actual))
+            ) +
+            geom_violin(
+                trim = FALSE,
+                scale = "width",
+                show.legend = FALSE
+            ) +
+            geom_point(
+                position = position_jitter(width = 0.2),
+                size = 1.5,
+                alpha = 0.9,
+                show.legend = FALSE
+            ) +
+            geom_abline(
+                slope = 1,
+                intercept = min(combined_data$Actual) - 1,
+                color = "black",
+                linewidth = 2.25,
+            ) +
+            geom_abline(
+                slope = 1,
+                intercept = min(combined_data$Actual) - 1,
+                color = "skyblue",
+                linewidth = 1.25,
+            ) +
+            geom_text(
+                aes(label = count, y = median_value, hjust = 0.5),
+                size = 7,
+                color = "white"
+            ) +
+            scale_fill_brewer(palette = "Dark2"
+            ) +
+            labs(
+                title = paste(title,
+                        "\nMSE: ", round(mse, digits = 2),
+                        "- Huber Loss: ", round(huber_loss, digits = 2)),
+                x = "Actual Qualites",
+                y = "Predicted Qualities"
+            ) +
+            theme(
+                axis.title.x = element_text(
+                    margin = margin(t = 15),
+                    size = 18),
+                axis.title.y = element_text(
+                    margin = margin(r = 15),
+                    size = 18),
+                axis.text.x = element_text(
+                    margin = margin(t = 10),
+                    size = 14),
+                axis.text.y = element_text(
+                    margin = margin(r = 10),
+                    size = 14),
+                plot.title = element_text(
+                    margin = margin(b = 20),
+                    hjust = 0.5,
+                    size = 22),
+                plot.margin = margin(0.75, 0.75, 0.75, 0.75, "cm")
+            )
+
+    # Show the plot
+    print(plot)
 
     # Return the Predicted Values, MSE and Huber Losses
     invisible(list(mse = mse, huber_loss = huber_loss,
