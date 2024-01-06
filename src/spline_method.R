@@ -2,82 +2,116 @@
 
 # To Do:
 # clean code
+# implement weights
+
 # use bootstrapping to gain confidence
 
 
-# ---- Load data and libraries from Setup.R file -------------------------------
-source("/Users/pwecker/dev/mltwo-project/src/setup.R")
+# 1. import libraries, source data and helper functions----
 library(ggplot2)
 library(gridExtra)
 library(splines)
 library(caret)
 
-wine_data <- read.csv("mltwo-project/data/winequality-red.csv", sep = ";")
-
-# Extract predictor variables (excluding 'quality')
-predictors <- train[, !colnames(wine_data) %in% "quality"] # 11 vars
-
-# Standardize the predictor variables and apply PCA
-standardized_predictors <- scale(predictors) # 11 cars
-pca_result <- prcomp(standardized_predictors, scale. = TRUE) # 11 vars
-
-# Extract the scores for the first three principal components
-pc_scores <- as.data.frame(pca_result$x[, 1:3])
-colnames(pc_scores) <- c("PC1", "PC2", "PC3")
-
-# Combine PC scores with 'quality'
-data_pca <- cbind(pc_scores, quality = train$quality)
-
-# List of PCs to plot
-pcs_to_plot <- colnames(pc_scores)
-
-# Create a list of violin plots for each PC
-pc_violin_plots <- lapply(pcs_to_plot, function(pc) {
-  ggplot(data_pca,
-         aes(x = factor(quality), y = get(pc), fill = factor(quality))) +
-    geom_violin(trim = FALSE) +
-    scale_fill_brewer(palette = "Set2") +  # Adjust the color palette as needed
-    labs(title = paste("Violin Plot of", pc, "by Quality"),
-         x = "Quality",
-         y = pc)
-})
-
-# Arrange and display the plots on the screen
-grid.arrange(grobs = pc_violin_plots, ncol = 2)
-
-# ----Modelling 3rd Order Polynomial----
+source("/Users/pwecker/dev/mltwo-project/src/setup.R")
+source("/Users/pwecker/dev/mltwo-project/src/helper_functions.R")
 
 
-# Fit a smoothing spline model using standard df (CV) on the first PC
-spline_model <- smooth.spline(data_pca$PC1,
-                              data_pca$quality)
+# 2. Load data, use PCA to construct predictor variable "PC1"----
+predictors <- train[, !colnames(wine_data) %in% "quality"]
+standardized_predictors <- scale(predictors)
+pca_result <- prcomp(standardized_predictors, scale. = TRUE)
+pc_score <- as.data.frame(pca_result$x[, 1])
+colnames(pc_score) <- c("PC1")
+train_pca <- cbind(pc_score, quality = train$quality)
 
-# ----visualize and investigate model----
-# Create a scatter plot of PC1 and 'quality'
+# 3. Plot the predictor "PC1" vs quality as violin
+# (This part of the code might be moved to some other place!)
+pc_to_plot <- colnames(pc_score)
+
+violin_plot <- ggplot(train_pca,
+                      aes(x = factor(quality),
+                          y = get(pc_to_plot),
+                          fill = factor(quality))) +
+                geom_violin(trim = FALSE) +
+                scale_fill_brewer(palette = "Set2") +
+                labs(title = paste("Violin Plot of",
+                                   pc_to_plot,
+                                   "by Quality"),
+                     x = "Quality",
+                     y = pc_to_plot)
+
+print(violin_plot)
+
+
+# 4. Fit smoothing spline models on "PC1" vs. quality
+# weigthed or unweigthed
+spline_unweighted <- smooth.spline(train_pca$PC1,
+                                   train_pca$quality)
+
+weigths <- build_weights(train_pca)
+spline_weighted <- smooth.spline(train_pca$PC1,
+                                 train$quality,
+                                 w = weights)
+
+
+# 5. Visualize data and prediction of model(s)
+#---- for unweighted model
+model <- spline_unweighted
+name <- "spline unweighted"
+x_vals <- seq(min(train_pca$PC1), max(train_pca$PC1), length.out = 100)
+y_vals <- predict(model, x_vals)$y
+
 scatter_plot <-
-  ggplot(data_pca, aes(x = PC1, y = quality, color = factor(quality))) +
+  ggplot(train_pca, aes(x = PC1, y = quality, color = factor(quality))) +
   geom_point(shape = 16) +
   scale_color_brewer(palette = "Set2") +
-  labs(title = "Scatter Plot of PC1 by Quality", x = "PC1", y = "Quality")
-
-# Generate x values for the smoothing spline curve
-x_vals <- seq(min(data_pca$PC1), max(data_pca$PC1), length.out = 100)
-
-# Predict y values using the smoothing spline
-y_vals <- predict(spline_model, x_vals)$y
-
-# Add the smoothing spline curve to the scatter plot
-scatter_plot + 
+  labs(title = "Scatter Plot of PC1 by Quality", x = "PC1", y = "Quality") +
   geom_line(data = data.frame(PC1 = x_vals, quality = y_vals),
             aes(x = PC1, y = quality), color = "red") +
-  labs(title = "Scatter Plot with Smoothing Spline of PC1 by Quality")
+  labs(title = paste(c(name, ", df= ", round(model$df, digits = 2),
+                       "lambda=", round(model$lambda, digits = 2)), collapse = " "))
 
-# Access the degrees of freedom
-df <- spline_model$df
-cat("Degrees of Freedom:", df, "\n")
+print(scatter_plot)
 
-# Print the result
-spline_model
+
+#
+#---- for weighted model
+model <- spline_weighted
+name <- "spline weighted"
+x_vals <- seq(min(train_pca$PC1), max(train_pca$PC1), length.out = 100)
+y_vals <- predict(model, x_vals)$y
+
+# Create a scatter plot of PC1 and 'quality'
+scatter_plot <-
+  ggplot(train_pca, aes(x = PC1, y = quality, color = factor(quality))) +
+  geom_point(shape = 16) +
+  scale_color_brewer(palette = "Set2") +
+  labs(title = "Scatter Plot of PC1 by Quality", x = "PC1", y = "Quality") +
+  geom_line(data = data.frame(PC1 = x_vals, quality = y_vals),
+            aes(x = PC1, y = quality), color = "red") +
+  labs(title = paste(c(name, ", df= ", round(model$df, digits = 2),
+                       "lambda=", round(model$lambda, digits = 2)), collapse = " "))
+
+print(scatter_plot)
+
+
+# trying out evaluation method
+evaluate_model(spline_unweighted)
+
+evaluate_model(spline_weighted, data_pca_validation)
+
+
+
+
+
+
+
+
+
+
+
+
 
 # check the model performance on the validation set
 vals <- validation[, !colnames(wine_data) %in% "quality"]
