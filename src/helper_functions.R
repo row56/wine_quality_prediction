@@ -112,10 +112,43 @@ evaluate_model <- function(model, data, title = "") {
         predicted_values <- predicted_values[, "y"]
     }
 
-    # Assuming 'original_data' is your original dataset with the discrete target
-    # and 'predictions' are your PPR predictions
-    combined_data <- data.frame(Actual = data$quality,
-        Predicted = as.numeric(predicted_values[[1]]))
+    actual <- data$quality
+    predicted <- as.numeric(predicted_values[[1]])
+
+    # Compute the MSE
+    mse <- mean((actual - predicted)^2)
+
+    # Print the MSE
+    print(paste("Test MSE (", title, "): ", mse, sep = ""))
+
+    # Compute Huber Loss
+    huber_loss <- huber_loss_vec(actual, predicted)
+
+    # Print the Huber Loss
+    print(paste("Test Huber Loss (", title, "): ", huber_loss, sep = ""))
+
+    # Create a violin plot
+    plot <- create_violin_plot(actual, predicted, title)
+
+    # Show the plot
+    print(plot)
+
+    # Return the Predicted Values, MSE and Huber Losses
+    invisible(list(mse = mse, huber_loss = huber_loss,
+        predicted_values = predicted))
+}
+
+create_violin_plot <- function(
+    actual,
+    predicted,
+    title = "",
+    show_loss = TRUE,
+    show_abline = TRUE,
+    xlab = "Actual Qualities",
+    ylab = "Predicted Qualities") {
+
+    combined_data <- data.frame(Actual = actual,
+        Predicted = predicted)
 
     data_count <- combined_data %>%
         group_by(Actual) %>%
@@ -126,22 +159,23 @@ evaluate_model <- function(model, data, title = "") {
         group_by(Actual) %>%
         summarize(median_value = median(Predicted))
 
-    combined_data <- merge(merge(combined_data, data_count, by = "Actual")
-                            , medians, by = "Actual")
+    combined_data <- merge(merge(combined_data, data_count, by = "Actual"),
+                            medians, by = "Actual")
 
-    # Compute the MSE
-    mse <- mean((combined_data$Actual - combined_data$Predicted)^2)
+    if (show_loss) {
+        # Compute Huber Loss
+        huber_loss <- huber_loss_vec(actual, predicted)
+        # Compute the MSE
+        mse <- mean((actual - predicted)^2)
 
-    # Print the MSE
-    print(paste("Test MSE (", title, "): ", mse, sep = ""))
+        plt_title <- paste(title,
+                        "\nMSE: ", round(mse, digits = 2),
+                        "- Huber Loss: ", round(huber_loss, digits = 2))
+    } else {
+        plt_title <- title
+    }
 
-    # Compute Huber Loss
-    huber_loss <- huber_loss_vec(combined_data$Actual, combined_data$Predicted)
-
-    # Print the Huber Loss
-    print(paste("Test Huber Loss (", title, "): ", huber_loss, sep = ""))
-
-    # Create a violin plot
+    # Create the violin plot
     plot <- ggplot(
                 combined_data,
                 aes(x = factor(Actual), y = Predicted, fill = factor(Actual))
@@ -156,19 +190,25 @@ evaluate_model <- function(model, data, title = "") {
                 size = 1.5,
                 alpha = 0.9,
                 show.legend = FALSE
-            ) +
-            geom_abline(
-                slope = 1,
-                intercept = min(combined_data$Actual) - 1,
-                color = "black",
-                linewidth = 2.25,
-            ) +
-            geom_abline(
-                slope = 1,
-                intercept = min(combined_data$Actual) - 1,
-                color = "skyblue",
-                linewidth = 1.25,
-            ) +
+            )
+    
+    if (show_abline) {
+        plot <- plot +
+                geom_abline(
+                    slope = 1,
+                    intercept = min(combined_data$Actual) - 1,
+                    color = "black",
+                    linewidth = 2.25,
+                ) +
+                geom_abline(
+                    slope = 1,
+                    intercept = min(combined_data$Actual) - 1,
+                    color = "skyblue",
+                    linewidth = 1.25,
+                )
+    }
+
+    plot <- plot +
             geom_text(
                 aes(label = count, y = median_value, hjust = 0.5),
                 size = 7,
@@ -177,11 +217,9 @@ evaluate_model <- function(model, data, title = "") {
             scale_fill_brewer(palette = "Dark2"
             ) +
             labs(
-                title = paste(title,
-                        "\nMSE: ", round(mse, digits = 2),
-                        "- Huber Loss: ", round(huber_loss, digits = 2)),
-                x = "Actual Qualites",
-                y = "Predicted Qualities"
+                title = plt_title,
+                x = xlab,
+                y = ylab
             ) +
             theme(
                 axis.title.x = element_text(
@@ -202,11 +240,6 @@ evaluate_model <- function(model, data, title = "") {
                     size = 22),
                 plot.margin = margin(0.75, 0.75, 0.75, 0.75, "cm")
             )
-
-    # Show the plot
-    print(plot)
-
-    # Return the Predicted Values, MSE and Huber Losses
-    invisible(list(mse = mse, huber_loss = huber_loss,
-        predicted_values = combined_data$Predicted))
+    
+    return(plot)
 }

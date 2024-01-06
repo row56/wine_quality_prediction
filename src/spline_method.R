@@ -1,56 +1,72 @@
-# Setup for spline smoothing method
+# ---- Load data and libraries from Setup.R file -------------------------------
 
-# To Do:
-# clean code
-# implement weights
-
-# use bootstrapping to gain confidence
-setwd("/Users/pwecker/dev/mltwo-project")
 source("src/setup.R")
-source("src/helper_functions.R")
-# 1. import libraries, source data and helper functions----
-library(ggplot2)
+clean_up <- FALSE
+
+# ---- Import libraries --------------------------------------------------------
+
 library(gridExtra)
 library(splines)
 library(caret)
 library(smotefamily)
+library(yardstick) # For huber loss
 
+# ---- Define functions --------------------------------------------------------
 
+source("src/helper_functions.R")
 
+get_pca_transformed_data <- function(data, pca_transform = NULL) {
+    # Get the predictors
+    predictors <- data[, !colnames(data) %in% "quality"]
 
-# 2. Load data, use PCA to construct predictor variable "PC1"----
-predictors <- train[, !colnames(wine_data) %in% "quality"]
-standardized_predictors <- scale(predictors)
-pca_result <- prcomp(standardized_predictors, scale. = TRUE)
-pc_score <- as.data.frame(pca_result$x)
-colnames(pc_score) <- c("PC1", "PC2", "PC3","PC4", "PC5", "PC6","PC7", "PC8", "PC9","PC10", "PC11" )
-train_pca <- cbind(pc_score, quality = train$quality)
+    # If pca_transform is not provided, fit PCA on the data
+    if (is.null(pca_transform)) {
+        pca_transform <- prcomp(predictors, scale. = TRUE)
+    }
 
-#-------use sampling methods here
-mixed_sampled_train <- balance_classes_mixed_sampling(train_pca, 150)
-table(mixed_sampled_train$quality)
+    # Transform the data
+    pc_scores <- as.data.frame(predict(pca_transform, predictors))
 
+    # Rename the columns
+    colnames <- list()
+    for (i in 1:ncol(pc_scores)) {
+        colnames[i] <- paste("PC", i, sep = "")
+    }
 
+    pca_data <- cbind(pc_scores, quality = data$quality)
+    proportion_of_var <- summary(pca_transform)$importance["Proportion of Variance", ]
 
+    plot(proportion_of_var, type = "b", main = "Explained Variance")
 
+    # Return the transformed data and the PCA transformation
+    return(list(data = pca_data,
+            transform = pca_transform,
+            proportion_of_var = proportion_of_var))
+}
 
-# 3. Plot the predictor "PC1" vs quality as violin
-# (This part of the code might be moved to some other place!)
-pc_to_plot <- colnames(pc_score)
+# ---- Perform PCA on the dataset ----------------------------------------------
 
-violin_plot <- ggplot(train_pca,
-                      aes(x = factor(quality),
-                          y = get(pc_to_plot),
-                          fill = factor(quality))) +
-                geom_violin(trim = FALSE) +
-                scale_fill_brewer(palette = "Set2") +
-                labs(title = paste("Violin Plot of",
-                                   pc_to_plot,
-                                   "by Quality"),
-                     x = "Quality",
-                     y = pc_to_plot)
+pca_result <- get_pca_transformed_data(train)
 
-print(violin_plot)
+train_pca <- pca_result$data
+validation_pca <- get_pca_transformed_data(validation, pca_result$transform)$data
+test_pca <- get_pca_transformed_data(test, pca_result$transform)$data
+
+# ---- Perform Spline smoothing with mixed sampling ----------------------------
+
+mixed_sampled_train <- balance_classes_mixed_sampling(train_pca, 200)
+
+# ---- Plot the predictor "PC1" vs quality as violin ---------------------------
+
+plot <- create_violin_plot(
+            train_pca$quality,
+            train_pca$PC1,
+            "PC1 vs Quality",
+            show_loss = FALSE,
+            show_abline = FALSE,
+            xlab = "Quality",
+            ylab = "PC1")
+print(plot)
 
 #------------------------------------------------------------------------
 # 4. Fit smoothing spline models on "PC1" vs. quality
