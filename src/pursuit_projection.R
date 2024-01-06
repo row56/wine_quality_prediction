@@ -11,7 +11,7 @@ library(yardstick) # For huber loss
 
 source("src/helper_functions.R")
 
-tune_nterms <- function(formula, train_data, val_data, max_terms = 20,
+tune_nterms <- function(formula, train_data, val_data, max_terms = 30,
     weights = NULL, title_suffix = "") {
 
     # Set the weights to 1 if not provided
@@ -19,30 +19,22 @@ tune_nterms <- function(formula, train_data, val_data, max_terms = 20,
         weights <- as.vector(rep(1, nrow(train_data)))
     }
 
-    # Store the weights in the environment so ppr() can access them
-    weights_in_globenv <- NULL
-    weights_in_globenv <<- weights
-
     # Create a vector for Huber losses
     huber <- rep(0, max_terms)
 
     # Loop over the number of terms
     for (i in 1:max_terms) {
+        args <- list(formula = formula, data = train_data,
+            weights = weights, nterms = i)
 
         # Fit the model
-        ppr_obj <- ppr(formula, train_data, weights = weights_in_globenv,
-            nterms = i)
+        ppr_obj <- do.call(ppr, args, quote = TRUE)
 
         # Predict on the validation set
         val_ppr <- predict(ppr_obj, newdata = val_data)
 
         # Compute huber loss
         huber[i] <- huber_loss_vec(val_data$quality, val_ppr)
-    }
-
-    # Remove the weights from the environment
-    if (exists("weights_in_globenv", envir = .GlobalEnv)) {
-        rm(weights_in_globenv, pos = ".GlobalEnv")
     }
 
     # Plot the Huber losses
@@ -75,7 +67,7 @@ tuning_result <- tune_nterms(formula, train, validation,
 ppr_simple <- ppr(formula, data = train, nterms = tuning_result$best_nterms)
 
 # Evaluate the model on the test set
-test_results <- evaluate_model(ppr_simple, test,
+test_results_simple <- evaluate_model(ppr_simple, test,
     title = "Simple PPR with HPO on nterms")
 
 # Maybe: The model is predicting in range between 5 and 6 often times
@@ -95,13 +87,15 @@ tuning_result <- tune_nterms(formula, train, validation,
 ppr_weighted <- ppr(formula, data = train, nterms = tuning_result$best_nterms)
 
 # Evaluate the model on the test set
-test_results <- evaluate_model(ppr_weighted, test,
+test_results_weighted <- evaluate_model(ppr_weighted, test,
     title = "PPR with inverse frequency weights")
 
 # Higher MSE, but the model is a little bit better in predicting the minority
 # classes
 
 # ---- Pursuit projection regression with oversampling using SMOTE--------------
+
+formula <- quality ~ .
 
 # Apply SMOTE oversampling per class on the training set
 balanced_train <- balance_classes_with_smote(train)
@@ -118,12 +112,14 @@ ppr_smote <- ppr(formula, data = balanced_train,
     nterms = tuning_result$best_nterms)
 
 # Evaluate the model on the test set
-test_results <- evaluate_model(ppr_smote, test,
+test_results_smote <- evaluate_model(ppr_smote, test,
     title = "PPR with SMOTE Oversampling")
 
 # ---- Pursuit projection regression with undersampling ------------------------
 
-# Apply SMOTE oversampling per class on the training set
+formula <- quality ~ .
+
+# Apply undersampling per class on the training set
 balanced_train <- balance_classes_by_undersampling(train)
 
 # Show the class distribution
@@ -134,18 +130,20 @@ tuning_result <- tune_nterms(formula, balanced_train, validation,
     title_suffix = "Undersampling")
 
 # Fit the model with the best number of terms
-ppr_smote <- ppr(formula, data = balanced_train,
+ppr_under <- ppr(formula, data = balanced_train,
     nterms = tuning_result$best_nterms)
 
 # Evaluate the model on the test set
-test_results <- evaluate_model(ppr_smote, test,
+test_results_under <- evaluate_model(ppr_under, test,
     title = "PPR with Undersampling")
 
 # ---- Pursuit projection regression with mixed sampling (under -> over) -------
 
+formula <- quality ~ .
+
 # Apply mixed sampling per class on the training set (first under, than
 # oversampling)
-balanced_train <- balance_classes_mixed_sampling(train, target_size = 150)
+balanced_train <- balance_classes_mixed_sampling(train, target_size = 200)
 
 # Show the class distribution
 print(table(balanced_train$quality))
@@ -155,19 +153,21 @@ tuning_result <- tune_nterms(formula, balanced_train, validation,
     title_suffix = "Mixed Sampling")
 
 # Fit the model with the best number of terms
-ppr_smote <- ppr(formula, data = balanced_train,
+ppr_mixed <- ppr(formula, data = balanced_train,
     nterms = tuning_result$best_nterms)
 
 # Evaluate the model on the test set
-test_results <- evaluate_model(ppr_smote, test, 
+test_results_mixed <- evaluate_model(ppr_mixed, test,
     title = "PPR with Mixed Sampling")
 
-# ---- Pursuit projection regression with mixed sampling (under -> over) -------
+# ---- Pursuit projection regression with mixed sampling and weights -----------
 
-# Apply SMOTE oversampling per class on the training set
-undersampled_train <- balance_classes_by_undersampling(train, target_size = 150)
+formula <- quality ~ .
 
-balanced_train <- balance_classes_with_smote(undersampled_train)
+# Apply mixed sampling per class on the training set (first under,
+# than oversampling)
+balanced_train <- balance_classes_mixed_sampling(train,
+    target_size = 200)
 
 weights <- build_weights(balanced_train)
 
@@ -179,14 +179,31 @@ tuning_result <- tune_nterms(formula, balanced_train, validation,
     title_suffix = "Mixed Sampling with weights", weights = weights)
 
 # Fit the model with the best number of terms
-ppr_smote <- ppr(formula, data = balanced_train,
+ppr_mixed_weighted <- ppr(formula, data = balanced_train,
     nterms = tuning_result$best_nterms, weights = weights)
 
 # Evaluate the model on the test set
-test_results <- evaluate_model(ppr_smote, test,
+test_results_mixed_weighted <- evaluate_model(ppr_mixed_weighted, test,
     title = "PPR with Mixed Sampling and Weights")
 
+# ---- Create a table with the results -----------------------------------------
+
+# Create a dataframe with the results
+results <- data.frame(
+    Model = c("Simple", "Weighted", "SMOTE", "Undersampling", "Mixed",
+        "Mixed Weighted"),
+    MSE = c(test_results_simple$mse, test_results_weighted$mse,
+        test_results_smote$mse, test_results_under$mse,
+        test_results_mixed$mse, test_results_mixed_weighted$mse),
+    Huber = c(test_results_simple$huber, test_results_weighted$huber,
+        test_results_smote$huber, test_results_under$huber,
+        test_results_mixed$huber, test_results_mixed_weighted$huber)
+)
+
+print(results)
+
 # ---- Clean up ----------------------------------------------------------------
+
 if (clean_up) {
     rm(list = ls())
 }

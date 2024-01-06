@@ -92,7 +92,7 @@ build_weights <- function(data) {
     # Loop over the weights and data
     for (i in seq_along(weights)) {
         # Higher weight for quality that differs from the mean
-        weights[i] <- total / counts[as.character(data[i, "quality"])]
+        weights[i] <- (total / counts[as.character(data[i, "quality"])])
     }
 
     # Return the weights
