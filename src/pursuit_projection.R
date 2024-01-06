@@ -8,6 +8,7 @@ clean_up <- FALSE
 library(smotefamily)
 library(caret)
 library(ggplot2)
+library(yardstick) # For huber loss
 
 # ---- Define functions --------------------------------------------------------
 
@@ -94,7 +95,7 @@ build_weights <- function(data) {
     return(weights)
 }
 
-evaluate_model <- function(model, data) {
+evaluate_model <- function(model, data, title_suffix = "") {
     # Predict on the data
     predicted_values <- predict(model, newdata = data)
 
@@ -105,12 +106,13 @@ evaluate_model <- function(model, data) {
 
     # Create a violin plot
     plot <- ggplot(combined_data,
-Lint            aes(x = factor(Actual), y = Predicted, fill = factor(Actual))) + # nolint
+            aes(x = factor(Actual), y = Predicted, fill = factor(Actual))) + # nolint
             geom_violin(trim = FALSE) +
             geom_abline(slope = 1, intercept = min(combined_data$Actual) - 1,
                 color = "red") +
             scale_fill_brewer(palette = "Set2") +
-            labs(title = "Violin plot of predicted test values",
+            labs(title = paste("Violin plot of predicted test values (",
+                title_suffix, ")"),
                 x = "Actual Qualites",
                 y = "Predicted Values") +
             theme(plot.title = element_text(hjust = 0.5, size = 20))
@@ -122,14 +124,21 @@ Lint            aes(x = factor(Actual), y = Predicted, fill = factor(Actual))) +
     mse <- mean((data$quality - predicted_values)^2)
 
     # Print the MSE
-    print(paste("Test MSE: ", mse))
+    print(paste("Test MSE (", title_suffix, "): ", mse, sep = ""))
 
-    # Return the Predicted Values and MSE
-    return(list(mse = mse, predicted_values = predicted_values))
+    # Compute Huber Loss
+    huber_loss <- huber_loss_vec(data$quality, predicted_values)
+
+    # Print the Huber Loss
+    print(paste("Test Huber Loss (", title_suffix, "): ", huber_loss, sep = ""))
+
+    # Return the Predicted Values, MSE and Huber Losses
+    return(list(mse = mse, huber_loss = huber_loss,
+        predicted_values = predicted_values))
 }
 
-tune_nterms <- function(formula, train_data, val_data, max_terms = 15,
-    weights = NULL) {
+tune_nterms <- function(formula, train_data, val_data, max_terms = 20,
+    weights = NULL, title_suffix = "") {
 
     # Set the weights to 1 if not provided
     if (is.null(weights)) {
@@ -140,8 +149,8 @@ tune_nterms <- function(formula, train_data, val_data, max_terms = 15,
     weights_in_globenv <- NULL
     weights_in_globenv <<- weights
 
-    # Create a vector of MSEs
-    mse <- rep(0, max_terms)
+    # Create a vector for Huber losses
+    huber <- rep(0, max_terms)
 
     # Loop over the number of terms
     for (i in 1:max_terms) {
@@ -153,8 +162,8 @@ tune_nterms <- function(formula, train_data, val_data, max_terms = 15,
         # Predict on the validation set
         val_ppr <- predict(ppr_obj, newdata = val_data)
 
-        # Compute the validation MSE
-        mse[i] <- mean((val_data$quality - val_ppr)^2)
+        # Compute huber loss
+        huber[i] <- huber_loss_vec(val_data$quality, val_ppr)
     }
 
     # Remove the weights from the environment
@@ -162,33 +171,37 @@ tune_nterms <- function(formula, train_data, val_data, max_terms = 15,
         rm(weights_in_globenv, pos = ".GlobalEnv")
     }
 
-    # Plot the MSEs
-    plot(1:max_terms, mse, type = "b", xlab = "Number of terms", ylab = "MSE")
+    # Plot the Huber losses
+    plot(1:max_terms, huber, type = "b", xlab = "Number of terms",
+        ylab = "Huber Loss", main = paste("Huber Loss vs Number of terms (",
+        title_suffix, ")"))
 
-    # Highlight the minimum MSE
-    points(which.min(mse), mse[which.min(mse)], col = "red", pch = 19)
+    # Highlight the minimum Huber loss
+    points(which.min(huber), huber[which.min(huber)], col = "red", pch = 19)
 
-    best_mse <- mse[which.min(mse)]
-    best_nterms <- which.min(mse)
+    best_huber <- huber[which.min(huber)]
+    best_nterms <- which.min(huber)
 
-    # Print the minimum MSE
-    print(paste("Minimum MSE with nterms = ", best_nterms, ": ", best_mse))
+    # Print the minimum Huber loss
+    print(paste("Minimum Huber with nterms = ", best_nterms, ": ", best_huber))
 
-    # Return the best MSE and number of terms
-    return(list(best_mse = best_mse, best_nterms = best_nterms, all_mse = mse))
+    # Return the best Huber loss and number of terms
+    return(list(best_huber = best_huber, best_nterms = best_nterms,
+        all_huber = huber))
 }
 
 # ---- Simple pursuit projection -----------------------------------------------
 
 formula <- quality ~ .
 
-tuning_result <- tune_nterms(formula, train, validation)
+tuning_result <- tune_nterms(formula, train, validation,
+    title_suffix = "Simple")
 
 # Fit the model with the best number of terms
 ppr_simple <- ppr(formula, data = train, nterms = tuning_result$best_nterms)
 
 # Evaluate the model on the test set
-test_results <- evaluate_model(ppr_simple, test)
+test_results <- evaluate_model(ppr_simple, test, title_suffix = "Simple")
 
 # Maybe: The model is predicting in range between 5 and 6 often times
 # for the quality, probably since more than 80% of are data are 5 or 6.
@@ -201,13 +214,14 @@ formula <- quality ~ .
 
 # Tune number of terms
 tuning_result <- tune_nterms(formula, train, validation,
-    weights = build_weights(train))
+    weights = build_weights(train), title_suffix = "weighted")
 
 # Fit the model with the best number of terms
 ppr_weighted <- ppr(formula, data = train, nterms = tuning_result$best_nterms)
 
 # Evaluate the model on the test set
-test_results <- evaluate_model(ppr_weighted, test)
+test_results <- evaluate_model(ppr_weighted, test,
+    title_suffix = "Weighted")
 
 # Higher MSE, but the model is a little bit better in predicting the minority
 # classes
@@ -221,14 +235,16 @@ balanced_train <- balance_classes_with_smote(train)
 table(balanced_train$quality)
 
 # Tune number of terms
-tuning_result <- tune_nterms(formula, balanced_train, validation)
+tuning_result <- tune_nterms(formula, balanced_train, validation,
+    title_suffix = "SMOTE Oversampling")
 
 # Fit the model with the best number of terms
 ppr_smote <- ppr(formula, data = balanced_train,
     nterms = tuning_result$best_nterms)
 
 # Evaluate the model on the test set
-test_results <- evaluate_model(ppr_smote, test)
+test_results <- evaluate_model(ppr_smote, test,
+    title_suffix = "SMOTE Oversampling")
 
 # ---- Pursuit projection regression with undersampling ------------------------
 
@@ -239,14 +255,15 @@ balanced_train <- balance_classes_by_undersampling(train)
 table(balanced_train$quality)
 
 # Tune number of terms
-tuning_result <- tune_nterms(formula, balanced_train, validation)
+tuning_result <- tune_nterms(formula, balanced_train, validation,
+    title_suffix = "Undersampling")
 
 # Fit the model with the best number of terms
 ppr_smote <- ppr(formula, data = balanced_train,
     nterms = tuning_result$best_nterms)
 
 # Evaluate the model on the test set
-test_results <- evaluate_model(ppr_smote, test)
+test_results <- evaluate_model(ppr_smote, test, title_suffix = "Undersampling")
 
 # ---- Pursuit projection regression with mixed sampling (under -> over) -------
 
@@ -259,14 +276,15 @@ balanced_train <- balance_classes_with_smote(undersampled_train)
 table(balanced_train$quality)
 
 # Tune number of terms
-tuning_result <- tune_nterms(formula, balanced_train, validation)
+tuning_result <- tune_nterms(formula, balanced_train, validation,
+    title_suffix = "Mixed Sampling")
 
 # Fit the model with the best number of terms
 ppr_smote <- ppr(formula, data = balanced_train,
     nterms = tuning_result$best_nterms)
 
 # Evaluate the model on the test set
-test_results <- evaluate_model(ppr_smote, test)
+test_results <- evaluate_model(ppr_smote, test, title_suffix = "Mixed Sampling")
 
 # ---- Clean up ----------------------------------------------------------------
 if (clean_up) {
