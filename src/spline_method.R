@@ -28,7 +28,7 @@ get_pca_transformed_data <- function(data, pca_transform = NULL) {
 
     # Rename the columns
     colnames <- list()
-    for (i in seq_len(pc_scores)) {
+    for (i in 1:ncol(pc_scores)) {
         colnames[i] <- paste("PC", i, sep = "")
     }
 
@@ -42,8 +42,6 @@ get_pca_transformed_data <- function(data, pca_transform = NULL) {
             transform = pca_transform,
             proportion_of_var = proportion_of_var))
 }
-
-
 
 # ---- Perform PCA on the dataset ----------------------------------------------
 
@@ -67,6 +65,15 @@ print(plot)
 # ---- Perform Spline smoothing simple only with HPO ---------------------------
 
 spline_simple <- smooth.spline(train_pca$PC1, train_pca$quality)
+
+source("src/helper_functions.R")
+plot_spline_curve(spline_simple,
+    train_pca$quality,
+    train_pca$PC1,
+    title = "Simple Spline",
+    xlab = "PC1",
+    ylab = "Quality")
+
 test_result_simple <- evaluate_model(spline_simple,
     test_pca[, c("PC1", "quality")])
 
@@ -77,6 +84,13 @@ weights <- build_weights(train_pca)
 spline_weighted <- smooth.spline(train_pca$PC1,
                                  train_pca$quality,
                                  w = weights)
+plot_spline_curve(spline_weighted,
+    train_pca$quality,
+    train_pca$PC1,
+    title = "Weighted Spline",
+    xlab = "Quality",
+    ylab = "PC1")
+
 test_result_weighted <- evaluate_model(spline_weighted,
     test_pca[, c("PC1", "quality")])
 
@@ -86,6 +100,13 @@ mixed_sampled_train <- balance_classes_mixed_sampling(train_pca, 200)
 
 spline_mixed_sampling <- smooth.spline(mixed_sampled_train$PC1,
                                        mixed_sampled_train$quality)
+plot_spline_curve(spline_mixed_sampling,
+    train_pca$quality,
+    train_pca$PC1,
+    title = "Mixed Sampling Spline",
+    xlab = "Quality",
+    ylab = "PC1")
+
 test_result_mixed_sampling <- evaluate_model(spline_mixed_sampling,
     test_pca[, c("PC1", "quality")])
 
@@ -97,6 +118,12 @@ weights <- build_weights(mixed_sampled_train)
 spline_mixed_sampling_weighted <- smooth.spline(mixed_sampled_train$PC1,
                                                 mixed_sampled_train$quality,
                                                 w = weights)
+plot_spline_curve(spline_mixed_sampling_weighted,
+    train_pca$quality,
+    train_pca$PC1,
+    title = "Mixed Sampling and Weighted Spline",
+    xlab = "Quality",
+    ylab = "PC1")
 test_result_mixed_weighted <- evaluate_model(spline_mixed_sampling_weighted,
     test_pca[, c("PC1", "quality")])
 

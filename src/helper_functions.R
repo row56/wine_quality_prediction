@@ -102,14 +102,14 @@ build_weights <- function(data) {
 evaluate_model <- function(model, data, title = "") {
 
     # Get the predictors
-    predictors <- data[, !names(data) %in% "quality"]
+    predictors <- data[, !names(data) %in% "quality", drop = FALSE]
 
-    # Predict on the data
-    predicted_values <- data.frame(predict(model, newdata = predictors))
-
-    if (exists("y", where = predicted_values)) {
+    if ("smooth.spline" %in% class(model)) {
         # Case for smooth.spline
-        predicted_values <- predicted_values[, "y"]
+        predicted_values <- as.vector(predict(model, predictors)$y)
+    } else {
+        # Case for ppr
+        predicted_values <- data.frame(predict(model, newdata = predictors))
     }
 
     actual <- data$quality
@@ -191,7 +191,7 @@ create_violin_plot <- function(
                 alpha = 0.9,
                 show.legend = FALSE
             )
-    
+
     if (show_abline) {
         plot <- plot +
                 geom_abline(
@@ -240,6 +240,86 @@ create_violin_plot <- function(
                     size = 22),
                 plot.margin = margin(0.75, 0.75, 0.75, 0.75, "cm")
             )
+
+    return(plot)
+}
+
+plot_spline_curve <- function(spline_obj, quality, predictor, title = "", xlab = "", ylab = "") { # nolint
     
+    combined_data <- data.frame(
+        Quality = quality,
+        Predictor = predictor
+    )
+
+    x_values <- seq(min(predictor), max(predictor), length.out = 300)
+    spline_pred <- as.vector(predict(spline_obj, x_values)$y)
+
+    # Calculate the median for each group
+    medians <- combined_data %>%
+        group_by(Quality) %>%
+        summarize(median_value = median(Predictor))
+
+    count <- combined_data %>%
+        group_by(Quality) %>%
+        summarize(count = n())
+
+    combined_data <- merge(combined_data, medians, by = "Quality")
+    combined_data <- merge(combined_data, count, by = "Quality")
+
+    # Create the violin plot
+    plot <- ggplot(
+                combined_data,
+                aes(x = Predictor, y = Quality, fill = factor(Quality))
+            ) +
+            geom_violin(
+                trim = FALSE,
+                scale = "width",
+                show.legend = FALSE
+            ) +
+            geom_point(
+                position = position_jitter(height = 0.2),
+                size = 1.5,
+                alpha = 0.9,
+                show.legend = FALSE
+            ) +
+            # TODO fix
+            # geom_line(
+            #     aes(x = x_values, y = spline_pred),
+            #     color = "black",
+            #     size = 1.25
+            # ) +
+            geom_text(
+                aes(label = count, x = median_value, vjust = 0.5),
+                size = 7,
+                color = "white"
+            ) +
+            scale_fill_brewer(palette = "Dark2"
+            ) +
+            labs(
+                title = title,
+                x = xlab,
+                y = ylab
+            ) +
+            theme(
+                axis.title.x = element_text(
+                    margin = margin(t = 15),
+                    size = 18),
+                axis.title.y = element_text(
+                    margin = margin(r = 15),
+                    size = 18),
+                axis.text.x = element_text(
+                    margin = margin(t = 10),
+                    size = 14),
+                axis.text.y = element_text(
+                    margin = margin(r = 10),
+                    size = 14),
+                plot.title = element_text(
+                    margin = margin(b = 20),
+                    hjust = 0.5,
+                    size = 22),
+                plot.margin = margin(0.75, 0.75, 0.75, 0.75, "cm")
+            )
+
+    print(plot)
     return(plot)
 }
