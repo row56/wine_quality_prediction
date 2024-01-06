@@ -141,10 +141,9 @@ test_results <- evaluate_model(ppr_smote, test, title_suffix = "Undersampling")
 
 # ---- Pursuit projection regression with mixed sampling (under -> over) -------
 
-# Apply SMOTE oversampling per class on the training set
-undersampled_train <- balance_classes_by_undersampling(train, target_size = 150)
-
-balanced_train <- balance_classes_with_smote(undersampled_train)
+# Apply mixed sampling per class on the training set (first under, than
+# oversampling)
+balanced_train <- balance_classes_mixed_sampling(train, target_size = 150)
 
 # Show the class distribution
 print(table(balanced_train$quality))

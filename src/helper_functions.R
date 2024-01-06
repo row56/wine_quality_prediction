@@ -69,6 +69,16 @@ balance_classes_by_undersampling <- function(df, target_size = 0) { # nolint
     return(balanced_df)
 }
 
+balance_classes_mixed_sampling <- function(df, target_size) {
+    # Undersample the dataset
+    undersampled_df <- balance_classes_by_undersampling(df, target_size)
+
+    # Oversample the dataset
+    balanced_df <- balance_classes_with_smote(undersampled_df)
+
+    return(balanced_df)
+}
+
 build_weights <- function(data) {
     # Inverse frequency weightinghow 
 
