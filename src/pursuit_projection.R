@@ -7,6 +7,7 @@ clean_up <- FALSE
 
 library(smotefamily)
 library(caret)
+library(ggplot2)
 
 # ---- Define functions --------------------------------------------------------
 
@@ -97,18 +98,28 @@ evaluate_model <- function(model, data) {
     # Predict on the data
     predicted_values <- predict(model, newdata = data)
 
-    actual_values <- data$quality
+    # Assuming 'original_data' is your original dataset with the discrete target
+    # and 'predictions' are your PPR predictions
+    combined_data <- data.frame(Actual = data$quality,
+                                Predicted = predicted_values)
 
-    # Create a scatter plot of the actual values vs the predicted values
-    plot(actual_values, predicted_values, xlab = "Actual Values",
-        ylab = "Predicted Values", main = "Actual vs Predicted Values",
-        xlim = c(3, 8), ylim = c(3, 8))
+    # Create a violin plot
+    plot <- ggplot(combined_data,
+            aes(x = factor(Actual), y = Predicted, fill = factor(Actual))) +
+            geom_violin(trim = FALSE) +
+            geom_abline(slope = 1, intercept = min(combined_data$Actual) - 1,
+                color = "red") +
+            scale_fill_brewer(palette = "Set2") +
+            labs(title = "Violin plot of predicted test values",
+                x = "Actual Qualites",
+                y = "Predicted Values") +
+            theme(plot.title = element_text(hjust = 0.5, size = 20))
 
-    # Add a line showing where the predicted values equal the actual values
-    abline(a = 0, b = 1, col = "red")
+    # Show the plot
+    print(plot)
 
     # Compute the MSE
-    mse <- mean((actual_values - predicted_values)^2)
+    mse <- mean((data$quality - predicted_values)^2)
 
     # Print the MSE
     print(paste("Test MSE: ", mse))
