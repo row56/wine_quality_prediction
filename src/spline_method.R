@@ -1,3 +1,6 @@
+# TODOs:
+# HPO with validation set
+
 # ---- Load data and libraries from Setup.R file -------------------------------
 
 source("src/setup.R")
@@ -5,10 +8,6 @@ clean_up <- FALSE
 
 # ---- Import libraries --------------------------------------------------------
 
-library(gridExtra)
-library(splines)
-library(caret)
-library(smotefamily)
 library(yardstick) # For huber loss
 
 # ---- Define functions --------------------------------------------------------
@@ -29,12 +28,12 @@ get_pca_transformed_data <- function(data, pca_transform = NULL) {
 
     # Rename the columns
     colnames <- list()
-    for (i in 1:ncol(pc_scores)) {
+    for (i in seq_len(pc_scores)) {
         colnames[i] <- paste("PC", i, sep = "")
     }
 
     pca_data <- cbind(pc_scores, quality = data$quality)
-    proportion_of_var <- summary(pca_transform)$importance["Proportion of Variance", ]
+    proportion_of_var <- summary(pca_transform)$importance["Proportion of Variance", ] # nolint
 
     plot(proportion_of_var, type = "b", main = "Explained Variance")
 
@@ -44,20 +43,17 @@ get_pca_transformed_data <- function(data, pca_transform = NULL) {
             proportion_of_var = proportion_of_var))
 }
 
+
+
 # ---- Perform PCA on the dataset ----------------------------------------------
 
 pca_result <- get_pca_transformed_data(train)
 
 train_pca <- pca_result$data
-validation_pca <- get_pca_transformed_data(validation, pca_result$transform)$data
+validation_pca <- get_pca_transformed_data(validation, pca_result$transform)$data # nolint
 test_pca <- get_pca_transformed_data(test, pca_result$transform)$data
 
-# ---- Perform Spline smoothing with mixed sampling ----------------------------
-
-mixed_sampled_train <- balance_classes_mixed_sampling(train_pca, 200)
-
-# ---- Plot the predictor "PC1" vs quality as violin ---------------------------
-
+# Plot PC1 vs Quality to see relationship
 plot <- create_violin_plot(
             train_pca$quality,
             train_pca$PC1,
@@ -68,81 +64,57 @@ plot <- create_violin_plot(
             ylab = "PC1")
 print(plot)
 
-#------------------------------------------------------------------------
-# 4. Fit smoothing spline models on "PC1" vs. quality
-# weigthed or unweigthed
-spline_unweighted <- smooth.spline(mixed_sampled_train$PC1,
-                                   mixed_sampled_train$quality)
+# ---- Perform Spline smoothing simple only with HPO ---------------------------
+
+spline_simple <- smooth.spline(train_pca$PC1, train_pca$quality)
+test_result_simple <- evaluate_model(spline_simple,
+    test_pca[, c("PC1", "quality")])
+
+# ---- Perform Spline smoothing weighted ---------------------------------------
 
 weights <- build_weights(train_pca)
+
 spline_weighted <- smooth.spline(train_pca$PC1,
-                                 train$quality,
+                                 train_pca$quality,
                                  w = weights)
+test_result_weighted <- evaluate_model(spline_weighted,
+    test_pca[, c("PC1", "quality")])
 
-# 5. Visualize data and prediction of model(s)
-#---- for unweighted model
-model <- spline_unweighted
-name <- "spline unweighted"
-x_vals <- seq(min(train_pca$PC1), max(train_pca$PC1), length.out = 100)
-y_vals <- predict(model, x_vals)$y
+# ---- Perform Spline smoothing with mixed sampling ----------------------------
 
-scatter_plot <-
-  ggplot(train_pca, aes(x = PC1, y = quality, color = factor(quality))) +
-  geom_point(shape = 16) +
-  scale_color_brewer(palette = "Set2") +
-  labs(title = "Scatter Plot of PC1 by Quality", x = "PC1", y = "Quality") +
-  geom_line(data = data.frame(PC1 = x_vals, quality = y_vals),
-            aes(x = PC1, y = quality), color = "red") +
-  labs(title = paste(c(name, ", df= ", round(model$df, digits = 2),
-                       "lambda=", round(model$lambda, digits = 2)), collapse = " "))
+mixed_sampled_train <- balance_classes_mixed_sampling(train_pca, 200)
 
-print(scatter_plot)
+spline_mixed_sampling <- smooth.spline(mixed_sampled_train$PC1,
+                                       mixed_sampled_train$quality)
+test_result_mixed_sampling <- evaluate_model(spline_mixed_sampling,
+    test_pca[, c("PC1", "quality")])
 
+# ---- Perform Spline smoothing with mixed sampling and weights ----------------
 
-#
-#---- Plot for weighted model
-model <- spline_weighted
-name <- "spline weighted"
-x_vals <- seq(min(train_pca$PC1), max(train_pca$PC1), length.out = 100)
-y_vals <- predict(model, x_vals)$y
+mixed_sampled_train <- balance_classes_mixed_sampling(train_pca, 200)
+weights <- build_weights(mixed_sampled_train)
 
-# Create a scatter plot of PC1 and 'quality'
-scatter_plot <-
-  ggplot(train_pca, aes(x = PC1, y = quality, color = factor(quality))) +
-  geom_point(shape = 16) +
-  scale_color_brewer(palette = "Set2") +
-  labs(title = "Scatter Plot of PC1 by Quality", x = "PC1", y = "Quality") +
-  geom_line(data = data.frame(PC1 = x_vals, quality = y_vals),
-            aes(x = PC1, y = quality), color = "red") +
-  labs(title = paste(c(name, ", df= ", round(model$df, digits = 2),
-                       "lambda=", round(model$lambda, digits = 2)), collapse = " "))
+spline_mixed_sampling_weighted <- smooth.spline(mixed_sampled_train$PC1,
+                                                mixed_sampled_train$quality,
+                                                w = weights)
+test_result_mixed_weighted <- evaluate_model(spline_mixed_sampling_weighted,
+    test_pca[, c("PC1", "quality")])
 
-print(scatter_plot)
+# ---- Create a table with the results -----------------------------------------
 
+# Create a dataframe with the results
+results <- data.frame(
+    Model = c("Simple", "Weighted", "Mixed", "Mixed Weighted"),
+    MSE = c(test_result_simple$mse, test_result_weighted$mse,
+        test_result_mixed$mse, test_result_mixed_weighted$mse),
+    Huber = c(test_result_simple$huber, test_result_weighted$huber,
+        test_result_mixed$huber, test_result_mixed_weighted$huber)
+)
 
+print(results)
 
-# check the model performance on the validation set
-vals <- validation[, !colnames(wine_data) %in% "quality"]
+# ---- Clean up ----------------------------------------------------------------
 
-standardized_predictors_validation <- scale(
-  vals,
-  center = pca_result$center,
-  scale = pca_result$scale)
-
-pc_scores_validation <- as.data.frame(predict(pca_result,
-                                              newdata = standardized_predictors_validation)[, 1])
-colnames(pc_scores_validation) <- c("PC1")
-data_pca_validation <- cbind(pc_scores_validation, quality = validation$quality)
-
-# 2. Apply the smoothing spline model to the validation set
-spline_weighted_predictions <- predict(spline_weighted, data_pca_validation$PC1)
-
-
-plot(data_pca_validation$quality, spline_weighted_predictions$y, xlab = "Actual Values",
-        ylab = "Predicted Values", main = "Actual vs Predicted Values",
-        xlim = c(3, 8), ylim = c(3, 8))
-
-# trying out evaluation method
-evaluate_model(spline_unweighted, data_pca_validation[, c("PC1", "quality")])
-
-evaluate_model(spline_weighted, data_pca_validation[, c("PC1", "quality")])
+if (clean_up) {
+    rm(list = ls())
+}
