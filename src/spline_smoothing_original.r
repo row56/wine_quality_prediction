@@ -1,6 +1,3 @@
-# TODOs:
-# HPO with validation set
-
 # ---- Load data and libraries from other files -------------------------------
 
 source("src/setup.R")
@@ -11,22 +8,36 @@ source("src/helper_functions.R")
 library(yardstick) # For huber loss
 
 
+# names(train):
+# "fixed.acidity"        "volatile.acidity"     "citric.acid"         
+# "residual.sugar"       "chlorides"            "free.sulfur.dioxide" 
+# "total.sulfur.dioxide" "density"              "pH"                  
+# "sulphates"            "alcohol"              "quality"  
+
+
+# Interesting predictors:
+# volatile.acidity
+# density
+# pH
+# alcohol
+# residual.sugar
+
 # ---- Set global variables and slice data frame --------------------------------
-predictor <- "alcohol"
+predictor <- "residual.sugar"
 target <- "quality"
 
 mixed_sampled_train <- balance_classes_mixed_sampling(train, 200)
 mixed_sampled_train <- mixed_sampled_train[c(predictor, target)]
 
+
 train <- train[c(predictor, target)]
 validation <- validation[c(predictor, target)]
 test <- test[c(predictor, target)]
 
-
 # ---- Plot Predictor vs Target to see relationship ------------------------------
 plot <- create_violin_plot(
-            train$quality,
-            train$alcohol,
+            train[[target]],
+            train[[predictor]],
             paste(predictor, " vs ", target),
             show_loss = FALSE,
             show_abline = FALSE,
@@ -35,76 +46,6 @@ plot <- create_violin_plot(
 print(plot)
 
 
-# -------- HPO on degrees of freedom by Huber loss -------------------------------
-
-tune_spline_df <- function(train_data, val_data, predictor, weights = NULL, title_suffix = "") {
-
-    # Get the predictors
-    train_predictor <- train_data[, !names(train_data) %in% "quality", drop = FALSE]
-    val_predictor <- val_data[, !names(train_data) %in% "quality", drop = FALSE]
-
-    print(train_predictor[["alcohol"]])
-
-    if (length(train_predictor[[predictor]]) != nrow(train_data) || length(val_predictor[[predictor]]) != nrow(val_data)) {
-        stop("Length of predictor and quality columns -do not match.")
-    }
-
-    if (ncol(train_predictor) > 1) {
-        stop("More than one predictor found, not supported for spline_smoothing.
-            Subset the data to one predictor and quality column.")
-    }
-
-    df_values <- c(2:length(unique(train$alcohol)))
-
-    # Create a vector for Huber losses
-    huber <- rep(0, length(df_values))
-
-    # Loop over the param_values
-    for (i in seq_along(df_values)) {
-
-        if (is.null(weights)) {
-            args <- list(
-                x = train_predictor[[predictor]],
-                y = train_data$quality,
-                df = df_values[i]
-        )
-        } else {
-            args <- list(
-                x = train_predictor[[predictor]],
-                y = train_data$quality,
-                w = weights,
-                df = df_values[i]
-            )
-        }
-
-        # Fit the model
-        spline_obj <- do.call(smooth.spline, args, quote = TRUE)
-
-        # Predict on the validation set
-        val_spline <- as.vector(predict(spline_obj, val_predictor[[predictor]])$y)
-
-        # Compute huber loss
-        huber[i] <- huber_loss_vec(val_data$quality, val_spline)
-    }
-
-    # Plot the Huber losses
-    plot(seq_along(df_values), huber, type = "b", xlab = "df",
-        ylab = "Huber Loss", main = paste("Huber Loss vs df (",
-        title_suffix, ")"))
-
-    # Highlight the minimum Huber loss
-    points(which.min(huber), huber[which.min(huber)], col = "red", pch = 19)
-
-    best_huber <- huber[which.min(huber)]
-    best_df <- df_values[which.min(huber)]
-
-    # Print the minimum Huber loss
-    print(paste("Minimum Huber with df = ", best_df, ": ", best_huber))
-
-    # Return the best Huber loss and df
-    return(list(best_huber = best_huber, best_df = best_df,
-        all_huber = huber))
-}
 
 # ---- Perform Spline smoothing simple only with HPO ---------------------------
 

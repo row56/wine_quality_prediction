@@ -4,7 +4,7 @@ library(ggplot2)
 
 # EDA Paul
 
-wine_data <- read.csv("mltwo-project/data/winequality-red.csv", sep = ";")
+wine_data <- read.csv("data/winequality-red.csv", sep = ";")
 
 #first glimpse of the data
 head(wine_data, 5)
