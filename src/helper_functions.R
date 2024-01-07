@@ -338,22 +338,20 @@ plot_spline_curve <- function(spline_obj, quality, predictor, title = "", xlab =
 
 # -------- HPO for spline smoothing on degrees of freedom by Huber loss --------------
 
-tune_spline_df <- function(train_data, val_data, predictor, weights = NULL, title = "") {
+tune_spline_df <- function(train_data, val_data, predictor, weights = NULL, title = "", maxdf = 70) {
 
     # Get the predictors
     train_predictor <- train_data[, !names(train_data) %in% "quality", drop = FALSE]
     val_predictor <- val_data[, !names(train_data) %in% "quality", drop = FALSE]
 
-    if (length(train_predictor[[predictor]]) != nrow(train_data) || length(val_predictor[[predictor]]) != nrow(val_data)) {
+    if (length(train_predictor[[predictor]]) != nrow(train_data)
+        || length(val_predictor[[predictor]]) != nrow(val_data)) {
         stop("Length of predictor and quality columns -do not match.")
     }
 
-    if (ncol(train_predictor) > 1) {
-        stop("More than one predictor found, not supported for spline_smoothing.
-            Subset the data to one predictor and quality column.")
-    }
+    maxdf <- min(maxdf, length(unique(train_data[[predictor]])) - 1)
 
-    df_values <- c(2:length(unique(train[[predictor]])))
+    df_values <- c(2:maxdf)
 
     # Create a vector for Huber losses
     huber <- rep(0, length(df_values))
@@ -388,7 +386,7 @@ tune_spline_df <- function(train_data, val_data, predictor, weights = NULL, titl
 
     # Set plot margin
     par(mar = c(5, 4, 4, 2) + 1)
-    
+
     # Plot the Huber losses
     plot(seq_along(df_values), huber, type = "b", xlab = "df",
         ylab = "Huber Loss", main = paste("HPO -", title),

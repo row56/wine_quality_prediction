@@ -23,7 +23,7 @@ library(yardstick) # For huber loss
 # residual.sugar
 
 # ---- Set global variables and slice data frame --------------------------------
-predictor <- "residual.sugar"
+predictor <- "alcohol"
 target <- "quality"
 
 mixed_sampled_train <- balance_classes_mixed_sampling(train, 200)
