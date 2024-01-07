@@ -50,7 +50,7 @@ print(plot)
 # ---- Perform Spline smoothing simple only with HPO ---------------------------
 
 tuning_result <- tune_spline_df(train, validation, predictor,
-    title_suffix = "Simple")
+    title = "Simple")
 
 # Fit the model with the best number of df
 spline_simple <- smooth.spline(train[[predictor]], train[[target]], df=tuning_result$best_df)
@@ -64,7 +64,7 @@ test_result_simple <- evaluate_model(spline_simple, test,
 weights <- build_weights(train)
 
 tuning_result <- tune_spline_df(train, validation, predictor, weights,
-    title_suffix = "Weighted")
+    title = "Weighted")
 
 spline_weighted <- smooth.spline(train[[predictor]], train[[target]], df=tuning_result$best_df, w = weights)
 
@@ -75,7 +75,7 @@ test_result_weighted <- evaluate_model(spline_weighted, test,
 # ---- Perform Spline smoothing with mixed sampling ----------------------------
 
 tuning_result <- tune_spline_df(mixed_sampled_train, validation, predictor,
-    title_suffix = "Mixed sampled")
+    title = "Mixed sampled")
 
 spline_mixed_sampling <- smooth.spline(mixed_sampled_train[[predictor]], mixed_sampled_train[[target]], df=tuning_result$best_df)
 
@@ -87,7 +87,7 @@ test_result_mixed <- evaluate_model(spline_mixed_sampling, test,
 weights <- build_weights(mixed_sampled_train)
 
 tuning_result <- tune_spline_df(mixed_sampled_train, validation, predictor, weights,
-    title_suffix = "Mixed sampled and weighted")
+    title = "Mixed sampled and weighted")
 
 spline_mixed_weighted <- smooth.spline(mixed_sampled_train[[predictor]], mixed_sampled_train[[target]], df=tuning_result$best_df, w = weights)
 

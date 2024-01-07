@@ -237,7 +237,8 @@ create_violin_plot <- function(
                 plot.title = element_text(
                     margin = margin(b = 20),
                     hjust = 0.5,
-                    size = 22),
+                    size = 22,
+                    face = "bold"),
                 plot.margin = margin(0.75, 0.75, 0.75, 0.75, "cm")
             )
 
@@ -326,7 +327,8 @@ plot_spline_curve <- function(spline_obj, quality, predictor, title = "", xlab =
                 plot.title = element_text(
                     margin = margin(b = 20),
                     hjust = 0.5,
-                    size = 22),
+                    size = 22,
+                    face = "bold"),
                 plot.margin = margin(0.75, 0.75, 0.75, 0.75, "cm")
             )
 
@@ -334,13 +336,9 @@ plot_spline_curve <- function(spline_obj, quality, predictor, title = "", xlab =
     return(plot)
 }
 
-
-
-
-
 # -------- HPO for spline smoothing on degrees of freedom by Huber loss --------------
 
-tune_spline_df <- function(train_data, val_data, predictor, weights = NULL, title_suffix = "") {
+tune_spline_df <- function(train_data, val_data, predictor, weights = NULL, title = "") {
 
     # Get the predictors
     train_predictor <- train_data[, !names(train_data) %in% "quality", drop = FALSE]
@@ -388,10 +386,13 @@ tune_spline_df <- function(train_data, val_data, predictor, weights = NULL, titl
         huber[i] <- huber_loss_vec(val_data$quality, val_spline)
     }
 
+    # Set plot margin
+    par(mar = c(5, 4, 4, 2) + 1)
+    
     # Plot the Huber losses
     plot(seq_along(df_values), huber, type = "b", xlab = "df",
-        ylab = "Huber Loss", main = paste("Huber Loss vs df (",
-        title_suffix, ")"))
+        ylab = "Huber Loss", main = paste("HPO -", title),
+        cex.lab = 1.5, cex.main = 1.7, cex.axis = 1.1)
 
     # Highlight the minimum Huber loss
     points(which.min(huber), huber[which.min(huber)], col = "red", pch = 19)

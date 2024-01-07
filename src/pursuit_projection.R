@@ -12,7 +12,7 @@ library(yardstick) # For huber loss
 source("src/helper_functions.R")
 
 tune_nterms <- function(formula, train_data, val_data, max_terms = 30,
-    weights = NULL, title_suffix = "") {
+    weights = NULL, title = "") {
 
     # Set the weights to 1 if not provided
     if (is.null(weights)) {
@@ -37,10 +37,13 @@ tune_nterms <- function(formula, train_data, val_data, max_terms = 30,
         huber[i] <- huber_loss_vec(val_data$quality, val_ppr)
     }
 
+    # Set plot margin
+    par(mar = c(5, 4, 4, 2) + 1)
+
     # Plot the Huber losses
     plot(1:max_terms, huber, type = "b", xlab = "Number of terms",
-        ylab = "Huber Loss", main = paste("Huber Loss vs Number of terms (",
-        title_suffix, ")"))
+        ylab = "Huber Loss", main = paste("HPO -", title),
+        cex.lab = 1.5, cex.main = 1.7, cex.axis = 1.1)
 
     # Highlight the minimum Huber loss
     points(which.min(huber), huber[which.min(huber)], col = "red", pch = 19)
@@ -49,7 +52,7 @@ tune_nterms <- function(formula, train_data, val_data, max_terms = 30,
     best_nterms <- which.min(huber)
 
     # Print the minimum Huber loss
-    print(paste("Minimum Huber with nterms = ", best_nterms, ": ", best_huber))
+    print(paste("Minimum Huber with nterms = ", best_nterms, ": ", best_huber, sep = ""))
 
     # Return the best Huber loss and number of terms
     return(list(best_huber = best_huber, best_nterms = best_nterms,
@@ -61,7 +64,7 @@ tune_nterms <- function(formula, train_data, val_data, max_terms = 30,
 formula <- quality ~ .
 
 tuning_result <- tune_nterms(formula, train, validation,
-    title_suffix = "Simple")
+    title = "Simple PPR")
 
 # Fit the model with the best number of terms
 ppr_simple <- ppr(formula, data = train, nterms = tuning_result$best_nterms)
@@ -81,14 +84,14 @@ formula <- quality ~ .
 
 # Tune number of terms
 tuning_result <- tune_nterms(formula, train, validation,
-    weights = build_weights(train), title_suffix = "weighted")
+    weights = build_weights(train), title = "Inverse Frequency Weighted PPR")
 
 # Fit the model with the best number of terms
 ppr_weighted <- ppr(formula, data = train, nterms = tuning_result$best_nterms)
 
 # Evaluate the model on the test set
 test_results_weighted <- evaluate_model(ppr_weighted, test,
-    title = "PPR with inverse frequency weights")
+    title = "Inverse Frequency Weighted PPR")
 
 # Higher MSE, but the model is a little bit better in predicting the minority
 # classes
@@ -105,7 +108,7 @@ print(table(balanced_train$quality))
 
 # Tune number of terms
 tuning_result <- tune_nterms(formula, balanced_train, validation,
-    title_suffix = "SMOTE Oversampling")
+    title = "PPR with SMOTE Oversampling")
 
 # Fit the model with the best number of terms
 ppr_smote <- ppr(formula, data = balanced_train,
@@ -127,7 +130,7 @@ print(table(balanced_train$quality))
 
 # Tune number of terms
 tuning_result <- tune_nterms(formula, balanced_train, validation,
-    title_suffix = "Undersampling")
+    title = "PPE with Undersampling")
 
 # Fit the model with the best number of terms
 ppr_under <- ppr(formula, data = balanced_train,
@@ -150,7 +153,7 @@ print(table(balanced_train$quality))
 
 # Tune number of terms
 tuning_result <- tune_nterms(formula, balanced_train, validation,
-    title_suffix = "Mixed Sampling")
+    title = "PPR with Mixed Sampling")
 
 # Fit the model with the best number of terms
 ppr_mixed <- ppr(formula, data = balanced_train,
@@ -176,7 +179,7 @@ print(table(balanced_train$quality))
 
 # Tune number of terms
 tuning_result <- tune_nterms(formula, balanced_train, validation,
-    title_suffix = "Mixed Sampling with weights", weights = weights)
+    title = "PPR with Mixed Sampling and Inverse Frequency Weights", weights = weights)
 
 # Fit the model with the best number of terms
 ppr_mixed_weighted <- ppr(formula, data = balanced_train,
@@ -184,7 +187,7 @@ ppr_mixed_weighted <- ppr(formula, data = balanced_train,
 
 # Evaluate the model on the test set
 test_results_mixed_weighted <- evaluate_model(ppr_mixed_weighted, test,
-    title = "PPR with Mixed Sampling and Weights")
+    title = "PPR with Mixed Sampling and Inverse Frequency Weights")
 
 # ---- Create a table with the results -----------------------------------------
 
