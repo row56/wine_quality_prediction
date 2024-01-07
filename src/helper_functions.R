@@ -203,7 +203,7 @@ create_violin_plot <- function(
                 geom_abline(
                     slope = 1,
                     intercept = min(combined_data$Actual) - 1,
-                    color = "skyblue",
+                    color = "#3DDC84",
                     linewidth = 1.25,
                 )
     }
