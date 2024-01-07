@@ -58,6 +58,11 @@ train_hybrid_sampled <- balance_classes_hybrid_sampling(train, target_size)
 validation_hybrid_sampled <- balance_classes_hybrid_sampling(validation, round(target_size / 3))
 # Dont sample the test set
 
+# ---- Check the class distribution ---------------------------------------------
+
+table(train_hybrid_sampled$quality)
+table(validation_hybrid_sampled$quality)
+
 # ---- Perform PCA on the dataset ----------------------------------------------
 
 pca_result <- get_pca_transformed_data(train)
@@ -146,7 +151,7 @@ weights <- build_weights(train_hybrid_sampled_pca)
 
 tuning_result <- tune_spline_df(train_hybrid_sampled_pca, validation_hybrid_sampled_pca, "PC1",
     weights = weights,
-    title = "Weighted spline smoothing with mixed sampling")
+    title = "Weighted spline smoothing with hybrid sampled data")
 
 spline_mixed_sampling_weighted <- smooth.spline(train_hybrid_sampled_pca$PC1,
                                                 train_hybrid_sampled_pca$quality,
@@ -155,7 +160,7 @@ spline_mixed_sampling_weighted <- smooth.spline(train_hybrid_sampled_pca$PC1,
 plot_spline_curve(spline_mixed_sampling_weighted,
     train_pca$quality,
     train_pca$PC1,
-    title = "Weighted spline smoothing with mixed sampling",
+    title = "Weighted spline smoothing with hybrid sampled data",
     xlab = "PC1",
     ylab = "Quality")
 
@@ -168,7 +173,7 @@ val_result_mixed_weighted <- evaluate_model(spline_mixed_sampling_weighted,
 
 # Create a dataframe with the results
 results <- data.frame(
-    Model = c("Simple", "Weighted", "Mixed", "Mixed Weighted"),
+    Model = c("Spline Simple", "Spline Weighted", "Spline Hybrid Sampled", "Spline Hybrid Sampled Weighted"),
     MSE = c(val_result_simple$mse, val_result_weighted$mse,
         val_result_mixed$mse, val_result_mixed_weighted$mse),
     Huber = c(val_result_simple$huber, val_result_weighted$huber,

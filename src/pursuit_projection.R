@@ -68,6 +68,11 @@ train_hybrid_sampled <- balance_classes_hybrid_sampling(train, target_size)
 validation_hybrid_sampled <- balance_classes_hybrid_sampling(validation, round(target_size / 3))
 # Dont sample the test set
 
+# ---- Check the class distribution ---------------------------------------------
+
+table(train_hybrid_sampled$quality)
+table(validation_hybrid_sampled$quality)
+
 # ---- Simple pursuit projection -----------------------------------------------
 
 formula <- quality ~ .
@@ -143,7 +148,7 @@ val_results_mixed_weighted <- evaluate_model(ppr_mixed_weighted, validation,
 
 # Create a dataframe with the results
 results <- data.frame(
-    Model = c("Simple", "Weighted", "Mixed", "Mixed Weighted"),
+    Model = c("PPR Simple", "PPR Weighted", "PPR Hybrid Sampled", "PPR Hybrid Sampled Weighted"),
     MSE = c(val_results_simple$mse, val_results_weighted$mse,
         val_results_mixed$mse, val_results_mixed_weighted$mse),
     Huber = c(val_results_simple$huber, val_results_weighted$huber,
