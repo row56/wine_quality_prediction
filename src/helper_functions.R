@@ -128,7 +128,7 @@ evaluate_model <- function(model, data, title = "") {
                     group_by(actual) %>%
                     summarize(mse = mean((actual - predicted)^2))
     mse_vec <- mse_per_class$mse
-    names(mse_vec) <- mse_per_class$actual
+    names(mse_vec) <- paste("MSE class", mse_per_class$actual)
     mse_per_class <- mse_vec
 
     # Compute the total MSE
@@ -138,7 +138,7 @@ evaluate_model <- function(model, data, title = "") {
     print(paste("MSE (", title, "): ", mse, sep = ""))
 
     # Print the Mean MSE of all class
-    print(paste("Mean MSE of all classes (", title, "): ", mean(mse_per_class), sep = ""))
+    print(paste("Mean MSE over classes (", title, "): ", mean(mse_per_class), sep = ""))
 
     # Create a violin plot
     plot <- create_violin_plot(actual, predicted, title)
@@ -178,8 +178,20 @@ create_violin_plot <- function(
         # Compute the MSE
         mse <- mean((actual - predicted)^2)
 
+        # Compute the MSE per class
+        mse_per_class <- data.frame(
+                            actual = actual,
+                            predicted = predicted
+                        ) %>%
+                        group_by(actual) %>%
+                        summarize(mse = mean((actual - predicted)^2))
+        mse_vec <- mse_per_class$mse
+        names(mse_vec) <- mse_per_class$actual
+        mse_per_class <- mse_vec
+
         plt_title <- paste(title,
-                        "\nMSE: ", round(mse, digits = 2))
+                        "\nMSE: ", round(mse, digits = 2),
+                        " - Mean MSE over classes: ", round(mean(mse_per_class), digits = 2))
     } else {
         plt_title <- title
     }

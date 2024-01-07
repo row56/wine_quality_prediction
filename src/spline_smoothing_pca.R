@@ -177,7 +177,7 @@ class_mse_vectors <- list(
 val_results <- do.call(rbind, lapply(class_mse_vectors, function(x) as.data.frame(t(x))))
 rownames(val_results) <- names(class_mse_vectors)
 val_results <- cbind(val_results,
-                "Mean MSE of all classes" = c(
+                "Mean MSE over classes" = c(
                     mean(val_results_simple$mse_per_class),
                     mean(val_results_weighted$mse_per_class),
                     mean(val_results_mixed$mse_per_class),
