@@ -17,15 +17,20 @@ balance_classes_with_smote <- function(df) {
     # Loop through each class
     for (class in unique(target)) {
         class_data <- df[target == class, ]
+        num_class <- nrow(class_data)
+
+        if (num_class < 2) {
+            stop("SMOTE requires at least 2 samples of each class.")
+        }
 
         if (nrow(class_data) < target_size) {
             # Calculate the number of synthetic samples needed
-            dup_size <- ((target_size - nrow(class_data))
-                / nrow(class_data))
+            dup_size <- ((target_size - num_class)
+                / num_class)
 
             # Apply SMOTE
             oversampled_data <- SMOTE(features[target == class, ],
-                target[target == class], K = 2, dup_size = dup_size)$data
+                target[target == class], K = min(5, num_class - 1), dup_size = dup_size)$data
 
             colnames(oversampled_data) <- colnames(balanced_df)
 
@@ -70,7 +75,7 @@ balance_classes_by_undersampling <- function(df, target_size = 0) { # nolint
     return(balanced_df)
 }
 
-balance_classes_mixed_sampling <- function(df, target_size) {
+balance_classes_hybrid_sampling <- function(df, target_size) {
     # Undersample the dataset
     undersampled_df <- balance_classes_by_undersampling(df, target_size)
 
@@ -119,13 +124,13 @@ evaluate_model <- function(model, data, title = "") {
     mse <- mean((actual - predicted)^2)
 
     # Print the MSE
-    print(paste("Test MSE (", title, "): ", mse, sep = ""))
+    print(paste("MSE (", title, "): ", mse, sep = ""))
 
     # Compute Huber Loss
     huber_loss <- huber_loss_vec(actual, predicted)
 
     # Print the Huber Loss
-    print(paste("Test Huber Loss (", title, "): ", huber_loss, sep = ""))
+    print(paste("Huber Loss (", title, "): ", huber_loss, sep = ""))
 
     # Create a violin plot
     plot <- create_violin_plot(actual, predicted, title)

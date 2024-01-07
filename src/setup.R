@@ -4,6 +4,9 @@ set.seed(8)
 # Load necessary libraries
 library(dplyr)
 
+# Load helper functions
+source("src/helper_functions.R")
+
 # Load the wine quality data
 wine_data <- read.csv("data/winequality-red.csv", sep = ";")
 
@@ -18,12 +21,12 @@ wine_data <- wine_data %>%
 
 # Create a 60% training set
 train_set_percentage <- 0.6
-sampled_data <- wine_data %>%
+stratified_data <- wine_data %>%
     group_by(quality) %>%
     slice_sample(prop = train_set_percentage) %>%
     ungroup() %>%
     select(row_index)
-train_indices <- sampled_data$row_index
+train_indices <- stratified_data$row_index
 
 # Split the remaining data (40%) into validation and test sets
 

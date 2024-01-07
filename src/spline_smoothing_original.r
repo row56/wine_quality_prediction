@@ -26,13 +26,19 @@ library(yardstick) # For huber loss
 predictor <- "alcohol"
 target <- "quality"
 
-mixed_sampled_train <- balance_classes_mixed_sampling(train, 200)
-mixed_sampled_train <- mixed_sampled_train[c(predictor, target)]
-
-
 train <- train[c(predictor, target)]
 validation <- validation[c(predictor, target)]
 test <- test[c(predictor, target)]
+
+# ---- Define hybrid sampled data ----------------------------------------------
+
+target_size <- 400
+# Apply sampling techniques to the training and validation sets
+train_hybrid_sampled <- balance_classes_hybrid_sampling(train, target_size)
+# 67 because we want to keep the same ratio between train and validation
+validation_hybrid_sampled <- balance_classes_hybrid_sampling(validation, round(target_size / 3))
+# Dont sample the test set
+
 
 # ---- Plot Predictor vs Target to see relationship ------------------------------
 plot <- create_violin_plot(
@@ -55,7 +61,7 @@ tuning_result <- tune_spline_df(train, validation, predictor,
 # Fit the model with the best number of df
 spline_simple <- smooth.spline(train[[predictor]], train[[target]], df=tuning_result$best_df)
 
-test_result_simple <- evaluate_model(spline_simple, test,
+val_result_simple <- evaluate_model(spline_simple, validation,
     title = "Simple spline with HPO on df")
 
 
@@ -69,30 +75,30 @@ tuning_result <- tune_spline_df(train, validation, predictor, weights,
 spline_weighted <- smooth.spline(train[[predictor]], train[[target]], df=tuning_result$best_df, w = weights)
 
 
-test_result_weighted <- evaluate_model(spline_weighted, test,
+val_result_weighted <- evaluate_model(spline_weighted, validation,
     title = "Weighted spline with HPO on df")
 
 # ---- Perform Spline smoothing with mixed sampling ----------------------------
 
-tuning_result <- tune_spline_df(mixed_sampled_train, validation, predictor,
+tuning_result <- tune_spline_df(train_hybrid_sampled, validation_hybrid_sampled, predictor,
     title = "Mixed sampled")
 
-spline_mixed_sampling <- smooth.spline(mixed_sampled_train[[predictor]], mixed_sampled_train[[target]], df=tuning_result$best_df)
+spline_mixed_sampling <- smooth.spline(train_hybrid_sampled[[predictor]], train_hybrid_sampled[[target]], df=tuning_result$best_df)
 
-test_result_mixed <- evaluate_model(spline_mixed_sampling, test,
+val_result_mixed <- evaluate_model(spline_mixed_sampling, validation,
     title = "Mixed sampled spline with HPO on df")
 
 # ---- Perform Spline smoothing with mixed sampling and weights ----------------
 
-weights <- build_weights(mixed_sampled_train)
+weights <- build_weights(train_hybrid_sampled)
 
-tuning_result <- tune_spline_df(mixed_sampled_train, validation, predictor, weights,
+tuning_result <- tune_spline_df(train_hybrid_sampled, validation_hybrid_sampled, predictor, weights,
     title = "Mixed sampled and weighted")
 
-spline_mixed_weighted <- smooth.spline(mixed_sampled_train[[predictor]], mixed_sampled_train[[target]], df=tuning_result$best_df, w = weights)
+spline_mixed_weighted <- smooth.spline(train_hybrid_sampled[[predictor]], train_hybrid_sampled[[target]], df=tuning_result$best_df, w = weights)
 
 
-test_result_mixed_weighted <- evaluate_model(spline_mixed_weighted, test,
+val_result_mixed_weighted <- evaluate_model(spline_mixed_weighted, validation,
     title = "Mixed sampled and weighted spline with HPO on df")
 
 # ---- Create a table with the results -----------------------------------------
@@ -100,10 +106,10 @@ test_result_mixed_weighted <- evaluate_model(spline_mixed_weighted, test,
 # Create a dataframe with the results
 results <- data.frame(
     Model = c("Simple", "Weighted", "Mixed", "Mixed Weighted"),
-    MSE = c(test_result_simple$mse, test_result_weighted$mse,
-        test_result_mixed$mse, test_result_mixed_weighted$mse),
-    Huber = c(test_result_simple$huber, test_result_weighted$huber,
-        test_result_mixed$huber, test_result_mixed_weighted$huber)
+    MSE = c(val_result_simple$mse, val_result_weighted$mse,
+        val_result_mixed$mse, val_result_mixed_weighted$mse),
+    Huber = c(val_result_simple$huber, val_result_weighted$huber,
+        val_result_mixed$huber, val_result_mixed_weighted$huber)
 )
 
 print(results)
