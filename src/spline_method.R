@@ -28,7 +28,7 @@ get_pca_transformed_data <- function(data, pca_transform = NULL) {
 
     # Rename the columns
     colnames <- list()
-    for (i in 1:ncol(pc_scores)) {
+    for (i in 1:ncol(pc_scores)) { # nolint
         colnames[i] <- paste("PC", i, sep = "")
     }
 
