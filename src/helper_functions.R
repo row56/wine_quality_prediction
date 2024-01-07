@@ -357,14 +357,14 @@ tune_spline_PARAMNAMEHERE <- function(train_data, val_data, weights = NULL, titl
             args <- list(
                 x = train_predictor,
                 y = train_data$quality,
-                PARAMNAMEHERE = param_values[i]
+                PARAMNAMEHERE = PARAMNAMEHERE_values[i]
         )
         } else {
             args <- list(
                 x = train_predictor,
                 y = train_data$quality,
                 w = weights,
-                PARAMNAMEHERE = param_values[i]
+                PARAMNAMEHERE = PARAMNAMEHERE_values[i]
             )
         }
 
