@@ -41,15 +41,15 @@ test_result_simple <- evaluate_model(spline_simple,
 
 weights <- build_weights(train)
 
-spline_weighted <- smooth.spline(traina$alcohol,
+spline_weighted <- smooth.spline(train$alcohol,
                                  train$quality,
                                  w = weights)
 plot_spline_curve(spline_weighted,
     train$quality,
     train$alcohol,
     title = "Weighted Spline",
-    xlab = "Quality",
-    ylab = "Alcohol in Volume %")
+    xlab = "Alcohol in Volume %",
+    ylab = "Quality")
 
 test_result_weighted <- evaluate_model(spline_weighted,
     test[, c("alcohol", "quality")])
@@ -64,10 +64,10 @@ plot_spline_curve(spline_mixed_sampling,
     train$quality,
     train$alcohol,
     title = "Mixed Sampling Spline",
-    xlab = "Quality",
-    ylab = "Alcohol in Volume %")
+    xlab = "Alcohol in Volume %",
+    ylab = "Quality")
 
-test_result_mixed_sampling <- evaluate_model(spline_mixed_sampling,
+test_result_mixed <- evaluate_model(spline_mixed_sampling,
     test[, c("alcohol", "quality")])
 
 # ---- Perform Spline smoothing with mixed sampling and weights ----------------
@@ -75,17 +75,17 @@ test_result_mixed_sampling <- evaluate_model(spline_mixed_sampling,
 mixed_sampled_train <- balance_classes_mixed_sampling(train, 200)
 weights <- build_weights(mixed_sampled_train)
 
-spline_mixed_sampling_weighted <- smooth.spline(mixed_sampled_train$PC1,
+spline_mixed_weighted <- smooth.spline(mixed_sampled_train$alcohol,
                                                 mixed_sampled_train$quality,
                                                 w = weights)
-plot_spline_curve(spline_mixed_sampling_weighted,
+plot_spline_curve(spline_mixed_weighted,
     train$quality,
     train$alcohol,
     title = "Mixed Sampling and Weighted Spline",
-    xlab = "Quality",
-    ylab = "Alcohol in Volume %")
-test_result_mixed_weighted <- evaluate_model(spline_mixed_sampling_weighted,
-    test_pca[, c("alcohol", "quality")])
+    xlab = "Alcohol in Volume %",
+    ylab = "Quality")
+test_result_mixed_weighted <- evaluate_model(spline_mixed_weighted,
+    test[, c("alcohol", "quality")])
 
 # ---- Create a table with the results -----------------------------------------
 
