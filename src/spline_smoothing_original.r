@@ -67,7 +67,7 @@ plot_spline_curve(spline_simple,
     xlab = predictor,
     ylab = "Quality")
 
-val_result_simple <- evaluate_model(spline_simple, validation,
+val_results_simple <- evaluate_model(spline_simple, validation,
     title = "Simple Spline with HPO on degrees of freedom")
 
 # ---- Perform Spline smoothing weighted ---------------------------------------
@@ -85,7 +85,7 @@ plot_spline_curve(spline_weighted,
     xlab = predictor,
     ylab = "Quality")
 
-val_result_weighted <- evaluate_model(spline_weighted, validation,
+val_results_weighted <- evaluate_model(spline_weighted, validation,
     title = "Weighted spline smoothing")
 
 # ---- Perform Spline smoothing with mixed sampling ----------------------------
@@ -101,7 +101,7 @@ plot_spline_curve(spline_mixed_sampling,
     xlab = predictor,
     ylab = "Quality")
 
-val_result_mixed <- evaluate_model(spline_mixed_sampling, validation,
+val_results_mixed <- evaluate_model(spline_mixed_sampling, validation,
     title = "Spline smoothing with hybrid sampled data")
 
 # ---- Perform Spline smoothing with mixed sampling and weights ----------------
@@ -119,19 +119,33 @@ plot_spline_curve(spline_mixed_weighted,
     xlab = predictor,
     ylab = "Quality")
 
-val_result_mixed_weighted <- evaluate_model(spline_mixed_weighted, validation,
+val_results_mixed_weighted <- evaluate_model(spline_mixed_weighted, validation,
     title = "Weighted spline smoothing with hybrid sampled data")
 
 # ---- Create a table with the results -----------------------------------------
 
 # Create a dataframe with the results
-results <- data.frame(
-    Model = c("Spline Simple", "Spline Weighted", "Spline Hybrid Sampled", "Spline Hybrid Sampled Weighted"),
-    MSE = c(val_result_simple$mse, val_result_weighted$mse,
-        val_result_mixed$mse, val_result_mixed_weighted$mse)
+class_mse_vectors <- list(
+    "Spline Simple" = val_results_simple$mse_per_class,
+    "Spline Weighted" = val_results_weighted$mse_per_class,
+    "Spline Hybrid Sampled" = val_results_mixed$mse_per_class,
+    "Spline Hybrid Sampled Weighted" = val_results_mixed_weighted$mse_per_class
 )
-
-print(results)
+val_results <- do.call(rbind, lapply(class_mse_vectors, function(x) as.data.frame(t(x))))
+rownames(val_results) <- names(class_mse_vectors)
+val_results <- cbind(val_results,
+                "Mean MSE of all classes" = c(
+                    mean(val_results_simple$mse_per_class),
+                    mean(val_results_weighted$mse_per_class),
+                    mean(val_results_mixed$mse_per_class),
+                    mean(val_results_mixed_weighted$mse_per_class)),
+                "Total MSE" = c(
+                    val_results_simple$mse,
+                    val_results_weighted$mse,
+                    val_results_mixed$mse,
+                    val_results_mixed_weighted$mse)
+                )
+print(val_results)
 
 # ---- Clean up ----------------------------------------------------------------
 

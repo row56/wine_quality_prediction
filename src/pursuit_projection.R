@@ -143,13 +143,27 @@ val_results_mixed_weighted <- evaluate_model(ppr_mixed_weighted, validation,
 # ---- Create a table with the results -----------------------------------------
 
 # Create a dataframe with the results
-results <- data.frame(
-    Model = c("PPR Simple", "PPR Weighted", "PPR Hybrid Sampled", "PPR Hybrid Sampled Weighted"),
-    MSE = c(val_results_simple$mse, val_results_weighted$mse,
-        val_results_mixed$mse, val_results_mixed_weighted$mse)
+class_mse_vectors <- list(
+    "PPR Simple" = val_results_simple$mse_per_class,
+    "PPR Weighted" = val_results_weighted$mse_per_class,
+    "PPR Hybrid Sampled" = val_results_mixed$mse_per_class,
+    "PPR Hybrid Sampled Weighted" = val_results_mixed_weighted$mse_per_class
 )
-
-print(results)
+val_results <- do.call(rbind, lapply(class_mse_vectors, function(x) as.data.frame(t(x))))
+rownames(val_results) <- names(class_mse_vectors)
+val_results <- cbind(val_results,
+                "Mean MSE of all classes" = c(
+                    mean(val_results_simple$mse_per_class),
+                    mean(val_results_weighted$mse_per_class),
+                    mean(val_results_mixed$mse_per_class),
+                    mean(val_results_mixed_weighted$mse_per_class)),
+                "Total MSE" = c(
+                    val_results_simple$mse,
+                    val_results_weighted$mse,
+                    val_results_mixed$mse,
+                    val_results_mixed_weighted$mse)
+                )
+print(val_results)
 
 # ---- Clean up ----------------------------------------------------------------
 

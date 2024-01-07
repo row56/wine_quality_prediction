@@ -120,11 +120,25 @@ evaluate_model <- function(model, data, title = "") {
     actual <- data$quality
     predicted <- as.numeric(predicted_values[[1]])
 
-    # Compute the MSE
+    # Compute the MSE per class
+    mse_per_class <- data.frame(
+                        actual = actual,
+                        predicted = predicted
+                    ) %>%
+                    group_by(actual) %>%
+                    summarize(mse = mean((actual - predicted)^2))
+    mse_vec <- mse_per_class$mse
+    names(mse_vec) <- mse_per_class$actual
+    mse_per_class <- mse_vec
+
+    # Compute the total MSE
     mse <- mean((actual - predicted)^2)
 
     # Print the MSE
     print(paste("MSE (", title, "): ", mse, sep = ""))
+
+    # Print the Mean MSE of all class
+    print(paste("Mean MSE of all classes (", title, "): ", mean(mse_per_class), sep = ""))
 
     # Create a violin plot
     plot <- create_violin_plot(actual, predicted, title)
@@ -133,7 +147,7 @@ evaluate_model <- function(model, data, title = "") {
     print(plot)
 
     # Return the Predicted Values, MSE Losses
-    invisible(list(mse = mse, predicted_values = predicted))
+    invisible(list(mse = mse, mse_per_class = mse_per_class, predicted_values = predicted))
 }
 
 create_violin_plot <- function(
@@ -241,7 +255,7 @@ create_violin_plot <- function(
 }
 
 plot_spline_curve <- function(spline_obj, quality, predictor, title = "", xlab = "", ylab = "") { # nolint
-    
+
     combined_data <- data.frame(
         Quality = quality,
         Predictor = predictor
