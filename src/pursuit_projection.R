@@ -3,10 +3,6 @@
 source("src/setup.R")
 clean_up <- FALSE
 
-# ---- Import libraries --------------------------------------------------------
-
-library(yardstick) # For huber loss
-
 # ---- Define functions --------------------------------------------------------
 
 source("src/helper_functions.R")
@@ -19,8 +15,8 @@ tune_nterms <- function(formula, train_data, val_data, max_terms = 30,
         weights <- as.vector(rep(1, nrow(train_data)))
     }
 
-    # Create a vector for Huber losses
-    huber <- rep(0, max_terms)
+    # Create a vector for MSE losses
+    mse <- rep(0, max_terms)
 
     # Loop over the number of terms
     for (i in 1:max_terms) {
@@ -33,30 +29,30 @@ tune_nterms <- function(formula, train_data, val_data, max_terms = 30,
         # Predict on the validation set
         val_ppr <- predict(ppr_obj, newdata = val_data)
 
-        # Compute huber loss
-        huber[i] <- huber_loss_vec(val_data$quality, val_ppr)
+        # Compute mse loss
+        mse[i] <- mean((val_ppr - val_data$quality)^2)
     }
 
     # Set plot margin
     par(mar = c(5, 4, 4, 2) + 1)
 
-    # Plot the Huber losses
-    plot(1:max_terms, huber, type = "b", xlab = "Number of terms",
-        ylab = "Huber Loss", main = paste("HPO -", title),
+    # Plot the MSE losses
+    plot(1:max_terms, mse, type = "b", xlab = "Number of terms",
+        ylab = "MSE Loss", main = paste("HPO -", title),
         cex.lab = 1.5, cex.main = 1.7, cex.axis = 1.1)
 
-    # Highlight the minimum Huber loss
-    points(which.min(huber), huber[which.min(huber)], col = "red", pch = 19)
+    # Highlight the minimum MSE loss
+    points(which.min(mse), mse[which.min(mse)], col = "red", pch = 19)
 
-    best_huber <- huber[which.min(huber)]
-    best_nterms <- which.min(huber)
+    best_mse <- mse[which.min(mse)]
+    best_nterms <- which.min(mse)
 
-    # Print the minimum Huber loss
-    print(paste("Minimum Huber with nterms = ", best_nterms, ": ", best_huber, sep = ""))
+    # Print the minimum MSE loss
+    print(paste("Minimum MSE with nterms = ", best_nterms, ": ", best_mse, sep = ""))
 
-    # Return the best Huber loss and number of terms
-    return(list(best_huber = best_huber, best_nterms = best_nterms,
-        all_huber = huber))
+    # Return the best MSE loss and number of terms
+    return(list(best_mse = best_mse, best_nterms = best_nterms,
+        all_mse = mse))
 }
 
 # ---- Define hybrid sampled data ----------------------------------------------
@@ -150,9 +146,7 @@ val_results_mixed_weighted <- evaluate_model(ppr_mixed_weighted, validation,
 results <- data.frame(
     Model = c("PPR Simple", "PPR Weighted", "PPR Hybrid Sampled", "PPR Hybrid Sampled Weighted"),
     MSE = c(val_results_simple$mse, val_results_weighted$mse,
-        val_results_mixed$mse, val_results_mixed_weighted$mse),
-    Huber = c(val_results_simple$huber, val_results_weighted$huber,
-        val_results_mixed$huber, val_results_mixed_weighted$huber)
+        val_results_mixed$mse, val_results_mixed_weighted$mse)
 )
 
 print(results)

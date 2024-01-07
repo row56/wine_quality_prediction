@@ -126,21 +126,14 @@ evaluate_model <- function(model, data, title = "") {
     # Print the MSE
     print(paste("MSE (", title, "): ", mse, sep = ""))
 
-    # Compute Huber Loss
-    huber_loss <- huber_loss_vec(actual, predicted)
-
-    # Print the Huber Loss
-    print(paste("Huber Loss (", title, "): ", huber_loss, sep = ""))
-
     # Create a violin plot
     plot <- create_violin_plot(actual, predicted, title)
 
     # Show the plot
     print(plot)
 
-    # Return the Predicted Values, MSE and Huber Losses
-    invisible(list(mse = mse, huber_loss = huber_loss,
-        predicted_values = predicted))
+    # Return the Predicted Values, MSE Losses
+    invisible(list(mse = mse, predicted_values = predicted))
 }
 
 create_violin_plot <- function(
@@ -168,14 +161,11 @@ create_violin_plot <- function(
                             medians, by = "Actual")
 
     if (show_loss) {
-        # Compute Huber Loss
-        huber_loss <- huber_loss_vec(actual, predicted)
         # Compute the MSE
         mse <- mean((actual - predicted)^2)
 
         plt_title <- paste(title,
-                        "\nMSE: ", round(mse, digits = 2),
-                        "- Huber Loss: ", round(huber_loss, digits = 2))
+                        "\nMSE: ", round(mse, digits = 2))
     } else {
         plt_title <- title
     }
@@ -341,8 +331,6 @@ plot_spline_curve <- function(spline_obj, quality, predictor, title = "", xlab =
     return(plot)
 }
 
-# -------- HPO for spline smoothing on degrees of freedom by Huber loss --------------
-
 tune_spline_df <- function(train_data, val_data, predictor, weights = NULL, title = "", maxdf = 70) {
 
     # Get the predictors
@@ -358,8 +346,8 @@ tune_spline_df <- function(train_data, val_data, predictor, weights = NULL, titl
 
     df_values <- c(2:maxdf)
 
-    # Create a vector for Huber losses
-    huber <- rep(0, length(df_values))
+    # Create a vector for MSE losses
+    mse <- rep(0, length(df_values))
 
     # Loop over the param_values
     for (i in seq_along(df_values)) {
@@ -385,28 +373,28 @@ tune_spline_df <- function(train_data, val_data, predictor, weights = NULL, titl
         # Predict on the validation set
         val_spline <- as.vector(predict(spline_obj, val_predictor[[predictor]])$y)
 
-        # Compute huber loss
-        huber[i] <- huber_loss_vec(val_data$quality, val_spline)
+        # Compute MSE loss
+        mse[i] <- mean((val_spline - val_data$quality)^2)
     }
 
     # Set plot margin
     par(mar = c(5, 4, 4, 2) + 1)
 
-    # Plot the Huber losses
-    plot(seq_along(df_values), huber, type = "b", xlab = "df",
-        ylab = "Huber Loss", main = paste("HPO -", title),
+    # Plot the MSE losses
+    plot(seq_along(df_values), mse, type = "b", xlab = "df",
+        ylab = "MSE Loss", main = paste("HPO -", title),
         cex.lab = 1.5, cex.main = 1.7, cex.axis = 1.1)
 
-    # Highlight the minimum Huber loss
-    points(which.min(huber), huber[which.min(huber)], col = "red", pch = 19)
+    # Highlight the minimum MSE loss
+    points(which.min(mse), mse[which.min(mse)], col = "red", pch = 19)
 
-    best_huber <- huber[which.min(huber)]
-    best_df <- df_values[which.min(huber)]
+    best_mse <- mse[which.min(mse)]
+    best_df <- df_values[which.min(mse)]
 
-    # Print the minimum Huber loss
-    print(paste("Minimum Huber with df = ", best_df, ": ", best_huber))
+    # Print the minimum MSE loss
+    print(paste("Minimum MSE with df = ", best_df, ": ", best_mse))
 
-    # Return the best Huber loss and df
-    return(list(best_huber = best_huber, best_df = best_df,
-        all_huber = huber))
+    # Return the best MSE loss and df
+    return(list(best_mse = best_mse, best_df = best_df,
+        all_mse = mse))
 }

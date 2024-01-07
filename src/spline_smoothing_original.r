@@ -6,10 +6,10 @@ clean_up <- FALSE
 source("src/helper_functions.R")
 
 # names(train):
-# "fixed.acidity"        "volatile.acidity"     "citric.acid"         
-# "residual.sugar"       "chlorides"            "free.sulfur.dioxide" 
-# "total.sulfur.dioxide" "density"              "pH"                  
-# "sulphates"            "alcohol"              "quality"  
+# "fixed.acidity"        "volatile.acidity"     "citric.acid"
+# "residual.sugar"       "chlorides"            "free.sulfur.dioxide"
+# "total.sulfur.dioxide" "density"              "pH"
+# "sulphates"            "alcohol"              "quality"
 
 
 # Interesting predictors:
@@ -128,9 +128,7 @@ val_result_mixed_weighted <- evaluate_model(spline_mixed_weighted, validation,
 results <- data.frame(
     Model = c("Spline Simple", "Spline Weighted", "Spline Hybrid Sampled", "Spline Hybrid Sampled Weighted"),
     MSE = c(val_result_simple$mse, val_result_weighted$mse,
-        val_result_mixed$mse, val_result_mixed_weighted$mse),
-    Huber = c(val_result_simple$huber, val_result_weighted$huber,
-        val_result_mixed$huber, val_result_mixed_weighted$huber)
+        val_result_mixed$mse, val_result_mixed_weighted$mse)
 )
 
 print(results)

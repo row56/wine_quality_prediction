@@ -6,10 +6,6 @@
 source("src/setup.R")
 clean_up <- FALSE
 
-# ---- Import libraries --------------------------------------------------------
-
-library(yardstick) # For huber loss
-
 # ---- Define functions --------------------------------------------------------
 
 source("src/helper_functions.R")
@@ -175,9 +171,7 @@ val_result_mixed_weighted <- evaluate_model(spline_mixed_sampling_weighted,
 results <- data.frame(
     Model = c("Spline Simple", "Spline Weighted", "Spline Hybrid Sampled", "Spline Hybrid Sampled Weighted"),
     MSE = c(val_result_simple$mse, val_result_weighted$mse,
-        val_result_mixed$mse, val_result_mixed_weighted$mse),
-    Huber = c(val_result_simple$huber, val_result_weighted$huber,
-        val_result_mixed$huber, val_result_mixed_weighted$huber)
+        val_result_mixed$mse, val_result_mixed_weighted$mse)
 )
 
 print(results)
