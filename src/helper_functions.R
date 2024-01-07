@@ -268,34 +268,44 @@ plot_spline_curve <- function(spline_obj, quality, predictor, title = "", xlab =
 
     # Create the violin plot
     plot <- ggplot(
-                combined_data,
-                aes(x = Predictor, y = Quality, fill = factor(Quality))
             ) +
             geom_violin(
+                data = combined_data,
+                aes(x = Predictor, y = Quality, fill = factor(Quality)),
                 trim = FALSE,
                 scale = "width",
                 show.legend = FALSE
             ) +
             geom_point(
+                data = combined_data,
+                aes(x = Predictor, y = Quality, fill = factor(Quality)),
                 position = position_jitter(height = 0.2),
                 size = 1.5,
                 alpha = 0.9,
                 show.legend = FALSE
             ) +
-            # TODO fix
-            # geom_line(
-            #     aes(x = x_values, y = spline_pred),
-            #     color = "black",
-            #     size = 1.25
-            # ) +
+            geom_line(
+                aes(x = x_values, y = spline_pred),
+                color = "black",
+                linewidth = 2.25
+            ) +
+            geom_line(
+                aes(x = x_values, y = spline_pred),
+                color = "skyblue",
+                linewidth = 1.25
+            ) +
             geom_text(
-                aes(label = count, x = median_value, vjust = 0.5),
+                data = combined_data,
+                aes(label = count, x = median_value, y = Quality, vjust = 0.5),
                 size = 7,
                 color = "white"
             ) +
-            scale_fill_brewer(palette = "Dark2"
+            scale_fill_brewer(
+                palette = "Dark2"
             ) +
             labs(
+                data = combined_data,
+                aes(x = Predictor, y = Quality, fill = factor(Quality)),
                 title = title,
                 x = xlab,
                 y = ylab

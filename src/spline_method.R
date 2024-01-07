@@ -65,8 +65,6 @@ print(plot)
 # ---- Perform Spline smoothing simple only with HPO ---------------------------
 
 spline_simple <- smooth.spline(train_pca$PC1, train_pca$quality)
-
-source("src/helper_functions.R")
 plot_spline_curve(spline_simple,
     train_pca$quality,
     train_pca$PC1,
@@ -88,8 +86,8 @@ plot_spline_curve(spline_weighted,
     train_pca$quality,
     train_pca$PC1,
     title = "Weighted Spline",
-    xlab = "Quality",
-    ylab = "PC1")
+    xlab = "PC1",
+    ylab = "Quality")
 
 test_result_weighted <- evaluate_model(spline_weighted,
     test_pca[, c("PC1", "quality")])
@@ -104,8 +102,8 @@ plot_spline_curve(spline_mixed_sampling,
     train_pca$quality,
     train_pca$PC1,
     title = "Mixed Sampling Spline",
-    xlab = "Quality",
-    ylab = "PC1")
+    xlab = "PC1",
+    ylab = "Quality")
 
 test_result_mixed_sampling <- evaluate_model(spline_mixed_sampling,
     test_pca[, c("PC1", "quality")])
@@ -122,8 +120,8 @@ plot_spline_curve(spline_mixed_sampling_weighted,
     train_pca$quality,
     train_pca$PC1,
     title = "Mixed Sampling and Weighted Spline",
-    xlab = "Quality",
-    ylab = "PC1")
+    xlab = "PC1",
+    ylab = "Quality")
 test_result_mixed_weighted <- evaluate_model(spline_mixed_sampling_weighted,
     test_pca[, c("PC1", "quality")])
 
