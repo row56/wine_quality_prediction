@@ -1,7 +1,7 @@
 # ---- Load data and libraries, functions from other files ---------------------
 
 source("src/setup.R")
-clean_up <- FALSE
+clean_up <- TRUE
 
 source("src/helper_functions.R")
 
@@ -122,14 +122,22 @@ plot_spline_curve(spline_mixed_weighted,
 val_results_mixed_weighted <- evaluate_model(spline_mixed_weighted, validation,
     title = "Weighted spline smoothing with hybrid sampled data")
 
-# ---- Create a table with the results -----------------------------------------
+# ---- Create a tables with the results ----------------------------------------
+
+# Create a list with the models
+models <- list(
+    "Spline Alcohol Simple" = spline_simple,
+    "Spline Alcohol Weighted" = spline_weighted,
+    "Spline Alcohol Hybrid Sampled" = spline_mixed_sampling,
+    "Spline Alcohol Hybrid Sampled Weighted" = spline_mixed_weighted
+)
 
 # Create a dataframe with the results
 class_mse_vectors <- list(
-    "Spline Simple" = val_results_simple$mse_per_class,
-    "Spline Weighted" = val_results_weighted$mse_per_class,
-    "Spline Hybrid Sampled" = val_results_mixed$mse_per_class,
-    "Spline Hybrid Sampled Weighted" = val_results_mixed_weighted$mse_per_class
+    "Spline Alcohol Simple" = val_results_simple$mse_per_class,
+    "Spline Alcohol Weighted" = val_results_weighted$mse_per_class,
+    "Spline Alcohol Hybrid Sampled" = val_results_mixed$mse_per_class,
+    "Spline Alcohol Hybrid Sampled Weighted" = val_results_mixed_weighted$mse_per_class
 )
 val_results <- do.call(rbind, lapply(class_mse_vectors, function(x) as.data.frame(t(x))))
 rownames(val_results) <- names(class_mse_vectors)
@@ -147,8 +155,15 @@ val_results <- cbind(val_results,
                 )
 print(val_results)
 
+# ---- Model selection ---------------------------------------------------------
+
+# Select the best model according to MSE over classes
+min_idx <- which.min(val_results$"Mean MSE over classes")
+final_model_name <- rownames(val_results)[min_idx]
+final_model <- models[[final_model_name]]
+
 # ---- Clean up ----------------------------------------------------------------
 
 if (clean_up) {
-    rm(list = ls())
+    rm(list = setdiff(ls(), keep_vars))
 }

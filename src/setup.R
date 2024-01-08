@@ -59,5 +59,12 @@ test$row_index <- NULL
 wine_data$row_index <- NULL
 
 # Clean the environment of variables not needed further
-keep_vars <- c("train", "validation", "test", "wine_data")
+keep_vars <- c("final_model", "final_model_name", "final_transform", 
+    "spline_pca_model", "spline_pca_model_name", "pca_transform", 
+    "spline_alcohol_model", "spline_alcohol_model_name", "spline_density_model",
+    "spline_density_model_name", "spline_pH_model", "spline_pH_model_name",
+    "spline_residualsugar_model", "spline_residualsugar_model_name",
+    "spline_volacidity_model", "spline_volacidity_model_name",
+    "ppr_model", "ppr_model_name", "spline_model", "spline_model_name",
+    "train", "validation", "test", "wine_data", "keep_vars")
 rm(list = setdiff(ls(), keep_vars))

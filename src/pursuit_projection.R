@@ -1,7 +1,7 @@
 # ---- Load data and libraries from Setup.R file -------------------------------
 
 source("src/setup.R")
-clean_up <- FALSE
+clean_up <- TRUE
 
 # ---- Define functions --------------------------------------------------------
 
@@ -140,7 +140,15 @@ ppr_mixed_weighted <- ppr(formula, data = train_hybrid_sampled,
 val_results_mixed_weighted <- evaluate_model(ppr_mixed_weighted, validation,
     title = "PPR with balanced data (hybrid sampled) and weights")
 
-# ---- Create a table with the results -----------------------------------------
+# ---- Create a tables with the results ----------------------------------------
+
+# Create a list with the models
+models <- list(
+    "PPR Simple" = ppr_simple,
+    "PPR Weighted" = ppr_weighted,
+    "PPR Hybrid Sampled" = ppr_mixed,
+    "PPR Hybrid Sampled Weighted" = ppr_mixed_weighted
+)
 
 # Create a dataframe with the results
 class_mse_vectors <- list(
@@ -165,8 +173,15 @@ val_results <- cbind(val_results,
                 )
 print(val_results)
 
+# ---- Model selection ---------------------------------------------------------
+
+# Select the best model according to MSE over classes
+min_idx <- which.min(val_results$"Mean MSE over classes")
+final_model_name <- rownames(val_results)[min_idx]
+final_model <- models[[final_model_name]]
+
 # ---- Clean up ----------------------------------------------------------------
 
 if (clean_up) {
-    rm(list = ls())
+    rm(list = setdiff(ls(), keep_vars))
 }

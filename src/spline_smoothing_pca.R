@@ -4,47 +4,12 @@
 # ---- Load data and libraries from Setup.R file -------------------------------
 
 source("src/setup.R")
-clean_up <- FALSE
+clean_up <- TRUE
 
 # ---- Define functions --------------------------------------------------------
 
 source("src/helper_functions.R")
 
-get_pca_transformed_data <- function(data, pca_transform = NULL) {
-    # Get the predictors
-    predictors <- data[, !colnames(data) %in% "quality"]
-
-    is_transformed <- TRUE
-    # If pca_transform is not provided, fit PCA on the data
-    if (is.null(pca_transform)) {
-        pca_transform <- prcomp(predictors, scale. = TRUE)
-        is_transformed <- FALSE
-    }
-
-    # Transform the data
-    pc_scores <- as.data.frame(predict(pca_transform, predictors))
-
-    # Rename the columns
-    colnames <- list()
-    for (i in 1:ncol(pc_scores)) { # nolint
-        colnames[i] <- paste("PC", i, sep = "")
-    }
-
-    pca_data <- cbind(pc_scores, quality = data$quality)
-    proportion_of_var <- summary(pca_transform)$importance["Proportion of Variance", ] # nolint
-
-    if (!is_transformed) {
-        # Plot the proportion of variance
-        plot(proportion_of_var, type = "b", main = "Explained Variance",
-            xlab = "Principal Component", ylab = "Proportion of Variance",
-            cex.lab = 1.5, cex.main = 1.7, cex.axis = 1.1)
-    }
-
-    # Return the transformed data and the PCA transformation
-    return(list(data = pca_data,
-            transform = pca_transform,
-            proportion_of_var = proportion_of_var))
-}
 # ---- Define hybrid sampled data ----------------------------------------------
 
 target_size <- 400
@@ -165,14 +130,22 @@ val <- get_pca_transformed_data(validation, hybrid_sampled_pca_result$transform)
 val_results_mixed_weighted <- evaluate_model(spline_mixed_sampling_weighted,
     val[, c("PC1", "quality")], title = "Weighted spline smoothing with mixed sampling")
 
-# ---- Create a table with the results -----------------------------------------
+# ---- Create a tables with the results ----------------------------------------
+
+# Create a list with the models
+models <- list(
+    "Spline PCA Simple" = spline_simple,
+    "Spline PCA Weighted" = spline_weighted,
+    "Spline PCA Hybrid Sampled" = spline_mixed_sampling,
+    "Spline PCA Hybrid Sampled Weighted" = spline_mixed_sampling_weighted
+)
 
 # Create a dataframe with the results
 class_mse_vectors <- list(
-    "Spline Simple" = val_results_simple$mse_per_class,
-    "Spline Weighted" = val_results_weighted$mse_per_class,
-    "Spline Hybrid Sampled" = val_results_mixed$mse_per_class,
-    "Spline Hybrid Sampled Weighted" = val_results_mixed_weighted$mse_per_class
+    "Spline PCA Simple" = val_results_simple$mse_per_class,
+    "Spline PCA Weighted" = val_results_weighted$mse_per_class,
+    "Spline PCA Hybrid Sampled" = val_results_mixed$mse_per_class,
+    "Spline PCA Hybrid Sampled Weighted" = val_results_mixed_weighted$mse_per_class
 )
 val_results <- do.call(rbind, lapply(class_mse_vectors, function(x) as.data.frame(t(x))))
 rownames(val_results) <- names(class_mse_vectors)
@@ -190,8 +163,21 @@ val_results <- cbind(val_results,
                 )
 print(val_results)
 
+# ---- Model selection ---------------------------------------------------------
+
+# Select the best model according to MSE over classes
+min_idx <- which.min(val_results$"Mean MSE over classes")
+final_model_name <- rownames(val_results)[min_idx]
+final_model <- models[[final_model_name]]
+
+if (grepl("Sampled", final_model_name)) {
+    final_transform <- hybrid_sampled_pca_result$transform
+} else {
+    final_transform <- pca_result$transform
+}
+
 # ---- Clean up ----------------------------------------------------------------
 
 if (clean_up) {
-    rm(list = ls())
+    rm(list = setdiff(ls(), keep_vars))
 }

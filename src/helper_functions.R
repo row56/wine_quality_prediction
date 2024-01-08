@@ -424,3 +424,39 @@ tune_spline_df <- function(train_data, val_data, predictor, weights = NULL, titl
     return(list(best_mse = best_mse, best_df = best_df,
         all_mse = mse))
 }
+
+get_pca_transformed_data <- function(data, pca_transform = NULL) {
+    # Get the predictors
+    predictors <- data[, !colnames(data) %in% "quality"]
+
+    is_transformed <- TRUE
+    # If pca_transform is not provided, fit PCA on the data
+    if (is.null(pca_transform)) {
+        pca_transform <- prcomp(predictors, scale. = TRUE)
+        is_transformed <- FALSE
+    }
+
+    # Transform the data
+    pc_scores <- as.data.frame(predict(pca_transform, predictors))
+
+    # Rename the columns
+    colnames <- list()
+    for (i in 1:ncol(pc_scores)) { # nolint
+        colnames[i] <- paste("PC", i, sep = "")
+    }
+
+    pca_data <- cbind(pc_scores, quality = data$quality)
+    proportion_of_var <- summary(pca_transform)$importance["Proportion of Variance", ] # nolint
+
+    if (!is_transformed) {
+        # Plot the proportion of variance
+        plot(proportion_of_var, type = "b", main = "Explained Variance",
+            xlab = "Principal Component", ylab = "Proportion of Variance",
+            cex.lab = 1.5, cex.main = 1.7, cex.axis = 1.1)
+    }
+
+    # Return the transformed data and the PCA transformation
+    return(list(data = pca_data,
+            transform = pca_transform,
+            proportion_of_var = proportion_of_var))
+}
