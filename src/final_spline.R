@@ -1,5 +1,3 @@
-# ---- Get data and function ---------------------------------------------------
-
 # ---- Get models --------------------------------------------------------------
 
 # Lock the environment to prevent accidental changes
@@ -30,31 +28,34 @@ spline_volacidity_model_name <- final_model_name
 
 rm(final_model, final_model_name, final_transform)
 
-# ---- Predict models on validation --------------------------------------------
+# ---- Get data and functions ---------------------------------------------------
+
 source("src/setup.R")
 source("src/helper_functions.R")
 
+# ---- Predict models on validation --------------------------------------------
+
 validation_pca <- get_pca_transformed_data(validation, pca_transform)$data # nolint
 pca_results <- evaluate_model(spline_pca_model, validation_pca[, c("PC1", "quality")],
-    title = "Spline smoothing with PCA")
+    title = spline_pca_model_name, show_plot = FALSE)
 
 alcohol_results <- evaluate_model(spline_alcohol_model, validation[, c("alcohol", "quality")],
-    title = "Spline smoothing with alcohol")
+    title = spline_alcohol_model_name, show_plot = FALSE)
 
 
 density_results <- evaluate_model(spline_density_model, validation[, c("density", "quality")],
-    title = "Spline smoothing with density")
+    title = spline_density_model_name, show_plot = FALSE)
 
 pH_results <- evaluate_model(spline_pH_model, validation[, c("pH", "quality")],
-    title = "Spline smoothing with pH")
+    title = spline_pH_model_name, show_plot = FALSE)
 
 residualsugar_results <- evaluate_model(spline_residualsugar_model, 
     validation[, c("residual.sugar", "quality")],
-    title = "Spline smoothing with residual sugar")
+    title = spline_residualsugar_model_name, show_plot = FALSE)
 
 volacidity_results <- evaluate_model(spline_volacidity_model,
     validation[, c("volatile.acidity", "quality")],
-    title = "Spline smoothing with volatile acidity")
+    title = spline_volacidity_model_name, show_plot = FALSE)
 
 # ---- Compare models on validation --------------------------------------------
 

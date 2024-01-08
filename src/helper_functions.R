@@ -104,7 +104,7 @@ build_weights <- function(data) {
     return(weights)
 }
 
-evaluate_model <- function(model, data, title = "") {
+evaluate_model <- function(model, data, title = "", show_plot = TRUE) {
 
     # Get the predictors
     predictors <- data[, !names(data) %in% "quality", drop = FALSE]
@@ -140,11 +140,13 @@ evaluate_model <- function(model, data, title = "") {
     # Print the Mean MSE of all class
     print(paste("Mean MSE over classes (", title, "): ", mean(mse_per_class), sep = ""))
 
-    # Create a violin plot
-    plot <- create_violin_plot(actual, predicted, title)
+    if (show_plot) {
+        # Create a violin plot
+        plot <- create_violin_plot(actual, predicted, title)
 
-    # Show the plot
-    print(plot)
+        # Show the plot
+        print(plot)
+    }
 
     # Return the Predicted Values, MSE Losses
     invisible(list(mse = mse, mse_per_class = mse_per_class, predicted_values = predicted))

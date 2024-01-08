@@ -13,10 +13,12 @@ if (grepl("PCA", spline_model_name)) {
 
 rm(final_model, final_model_name)
 
-# ---- Predict models on validation --------------------------------------------
+# ---- Get data and functions --------------------------------------------------
 
 source("src/setup.R")
 source("src/helper_functions.R")
+
+# ---- Predict models on TEST --------------------------------------------------
 
 ppr_results <- evaluate_model(ppr_model, test,
     title = "Pursuit Projection Regression")
