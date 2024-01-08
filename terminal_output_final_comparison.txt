@@ -1,0 +1,462 @@
+[1] "Minimum MSE with nterms = 5: 0.4151181963099"
+[1] "MSE (Simple PPR with HPO): 0.4151181963099"
+[1] "Mean MSE over classes (Simple PPR with HPO): 1.30567867471144"
+[1] "Minimum MSE with nterms = 25: 0.648363833901311"
+[1] "MSE (Inverse Frequency Weighted PPR with HPO): 0.607511124768979"
+[1] "Mean MSE over classes (Inverse Frequency Weighted PPR with HPO): 1.34081113545796"
+[1] "Minimum MSE with nterms = 3: 0.773764591690657"
+[1] "MSE (PPR with balanced data (hybrid sampled) and HPO): 0.836306625389682"
+[1] "Mean MSE over classes (PPR with balanced data (hybrid sampled) and HPO): 0.854914326427699"
+[1] "Minimum MSE with nterms = 1: 0.840683448651903"
+[1] "MSE (Weighted PPR with balanced data (hybrid sampled) and HPO): 1.05387463155107"
+[1] "Mean MSE over classes (Weighted PPR with balanced data (hybrid sampled) and HPO): 1.04174816667137"
+                                                         MSE class 3
+Simple PPR with HPO                                        2.8694153
+Inverse Frequency Weighted PPR with HPO                    2.5236068
+PPR with balanced data (hybrid sampled) and HPO            0.9222077
+Weighted PPR with balanced data (hybrid sampled) and HPO   1.7319303
+                                                         MSE class 4
+Simple PPR with HPO                                         1.564318
+Inverse Frequency Weighted PPR with HPO                     2.383661
+PPR with balanced data (hybrid sampled) and HPO             1.628401
+Weighted PPR with balanced data (hybrid sampled) and HPO    1.395500
+                                                         MSE class 5
+Simple PPR with HPO                                        0.3199512
+Inverse Frequency Weighted PPR with HPO                    0.5835933
+PPR with balanced data (hybrid sampled) and HPO            0.8455337
+Weighted PPR with balanced data (hybrid sampled) and HPO   1.1648997
+                                                         MSE class 6
+Simple PPR with HPO                                        0.2773164
+Inverse Frequency Weighted PPR with HPO                    0.3805429
+PPR with balanced data (hybrid sampled) and HPO            0.8301964
+Weighted PPR with balanced data (hybrid sampled) and HPO   1.0983709
+                                                         MSE class 7
+Simple PPR with HPO                                        0.4891416
+Inverse Frequency Weighted PPR with HPO                    0.6338774
+PPR with balanced data (hybrid sampled) and HPO            0.6035146
+Weighted PPR with balanced data (hybrid sampled) and HPO   0.4239051
+                                                         MSE class 8
+Simple PPR with HPO                                        2.3139301
+Inverse Frequency Weighted PPR with HPO                    1.5395858
+PPR with balanced data (hybrid sampled) and HPO            0.2996330
+Weighted PPR with balanced data (hybrid sampled) and HPO   0.4358827
+                                                         Mean MSE over classes
+Simple PPR with HPO                                                  1.3056787
+Inverse Frequency Weighted PPR with HPO                              1.3408111
+PPR with balanced data (hybrid sampled) and HPO                      0.8549143
+Weighted PPR with balanced data (hybrid sampled) and HPO             1.0417482
+                                                         Total MSE
+Simple PPR with HPO                                      0.4151182
+Inverse Frequency Weighted PPR with HPO                  0.6075111
+PPR with balanced data (hybrid sampled) and HPO          0.8363066
+Weighted PPR with balanced data (hybrid sampled) and HPO 1.0538746
+[1] "Minimum MSE with df =  2 :  0.668096778577314"
+[1] "MSE (Simple Spline on PC1 with HPO): 0.668096778577314"
+[1] "Mean MSE over classes (Simple Spline on PC1 with HPO): 2.88908711911652"
+[1] "Minimum MSE with df =  2 :  0.704071577451382"
+[1] "MSE (Inverse Frequency Weighted Spline on PC1 with HPO): 0.704071577451382"
+[1] "Mean MSE over classes (Inverse Frequency Weighted Spline on PC1 with HPO): 2.86648760637713"
+[1] "Minimum MSE with df =  8 :  3.63814162671151"
+[1] "MSE (Spline on PC1 with balanced data (hybrid sampled) and HPO): 0.99473470163978"
+[1] "Mean MSE over classes (Spline on PC1 with balanced data (hybrid sampled) and HPO): 3.07333881471565"
+[1] "Minimum MSE with df =  2 :  3.65376630948595"
+[1] "MSE (Weighted spline on PC1 with balanced data (hybrid sampled) and HPO): 0.82759869609004"
+[1] "Mean MSE over classes (Weighted spline on PC1 with balanced data (hybrid sampled) and HPO): 2.72153428314522"
+                                                                   MSE class 3
+Simple Spline on PC1 with HPO                                         6.948219
+Inverse Frequency Weighted Spline on PC1 with HPO                     6.493424
+Spline on PC1 with balanced data (hybrid sampled) and HPO             6.223805
+Weighted spline on PC1 with balanced data (hybrid sampled) and HPO    6.517690
+                                                                   MSE class 4
+Simple Spline on PC1 with HPO                                         2.599248
+Inverse Frequency Weighted Spline on PC1 with HPO                     2.261560
+Spline on PC1 with balanced data (hybrid sampled) and HPO             2.408918
+Weighted spline on PC1 with balanced data (hybrid sampled) and HPO    2.213499
+                                                                   MSE class 5
+Simple Spline on PC1 with HPO                                        0.4107521
+Inverse Frequency Weighted Spline on PC1 with HPO                    0.3567217
+Spline on PC1 with balanced data (hybrid sampled) and HPO            0.7484048
+Weighted spline on PC1 with balanced data (hybrid sampled) and HPO   0.5841413
+                                                                   MSE class 6
+Simple Spline on PC1 with HPO                                        0.1477281
+Inverse Frequency Weighted Spline on PC1 with HPO                    0.2850728
+Spline on PC1 with balanced data (hybrid sampled) and HPO            0.7470568
+Weighted spline on PC1 with balanced data (hybrid sampled) and HPO   0.5278851
+                                                                   MSE class 7
+Simple Spline on PC1 with HPO                                         1.794564
+Inverse Frequency Weighted Spline on PC1 with HPO                     1.933572
+Spline on PC1 with balanced data (hybrid sampled) and HPO             1.323007
+Weighted spline on PC1 with balanced data (hybrid sampled) and HPO    1.459248
+                                                                   MSE class 8
+Simple Spline on PC1 with HPO                                         5.434011
+Inverse Frequency Weighted Spline on PC1 with HPO                     5.868575
+Spline on PC1 with balanced data (hybrid sampled) and HPO             6.988841
+Weighted spline on PC1 with balanced data (hybrid sampled) and HPO    5.026742
+                                                                   Mean MSE over classes
+Simple Spline on PC1 with HPO                                                   2.889087
+Inverse Frequency Weighted Spline on PC1 with HPO                               2.866488
+Spline on PC1 with balanced data (hybrid sampled) and HPO                       3.073339
+Weighted spline on PC1 with balanced data (hybrid sampled) and HPO              2.721534
+                                                                   Total MSE
+Simple Spline on PC1 with HPO                                      0.6680968
+Inverse Frequency Weighted Spline on PC1 with HPO                  0.7040716
+Spline on PC1 with balanced data (hybrid sampled) and HPO          0.9947347
+Weighted spline on PC1 with balanced data (hybrid sampled) and HPO 0.8275987
+[1] "Minimum MSE with df =  18 :  0.514277590991038"
+[1] "MSE (Simple Spline on alcohol with HPO): 0.514277590991038"
+[1] "Mean MSE over classes (Simple Spline on alcohol with HPO): 2.43210352905408"
+[1] "Minimum MSE with df =  2 :  0.974957808076096"
+[1] "MSE (Inverse Frequency Weighted Spline on alcohol with HPO): 0.974957808076096"
+[1] "Mean MSE over classes (Inverse Frequency Weighted Spline on alcohol with HPO): 2.05343502809829"
+[1] "Minimum MSE with df =  4 :  1.83696700193073"
+[1] "MSE (Spline on alcohol with balanced data (hybrid sampled) and HPO): 1.08993183722618"
+[1] "Mean MSE over classes (Spline on alcohol with balanced data (hybrid sampled) and HPO): 2.10086838742087"
+[1] "Minimum MSE with df =  4 :  1.83974361535957"
+[1] "MSE (Weighted spline on alcohol with balanced data (hybrid sampled) and HPO): 1.04603838093161"
+[1] "Mean MSE over classes (Weighted spline on alcohol with balanced data (hybrid sampled) and HPO): 2.09351847049261"
+                                                                       MSE class 3
+Simple Spline on alcohol with HPO                                         6.558017
+Inverse Frequency Weighted Spline on alcohol with HPO                     3.651628
+Spline on alcohol with balanced data (hybrid sampled) and HPO             3.614419
+Weighted spline on alcohol with balanced data (hybrid sampled) and HPO    3.707590
+                                                                       MSE class 4
+Simple Spline on alcohol with HPO                                         2.312042
+Inverse Frequency Weighted Spline on alcohol with HPO                     1.300225
+Spline on alcohol with balanced data (hybrid sampled) and HPO             1.208808
+Weighted spline on alcohol with balanced data (hybrid sampled) and HPO    1.264684
+                                                                       MSE class 5
+Simple Spline on alcohol with HPO                                        0.2708942
+Inverse Frequency Weighted Spline on alcohol with HPO                    0.5939848
+Spline on alcohol with balanced data (hybrid sampled) and HPO            0.6899248
+Weighted spline on alcohol with balanced data (hybrid sampled) and HPO   0.6620979
+                                                                       MSE class 6
+Simple Spline on alcohol with HPO                                        0.2390343
+Inverse Frequency Weighted Spline on alcohol with HPO                    1.1753496
+Spline on alcohol with balanced data (hybrid sampled) and HPO            1.3840627
+Weighted spline on alcohol with balanced data (hybrid sampled) and HPO   1.3089847
+                                                                       MSE class 7
+Simple Spline on alcohol with HPO                                        0.9484440
+Inverse Frequency Weighted Spline on alcohol with HPO                    1.0579635
+Spline on alcohol with balanced data (hybrid sampled) and HPO            1.0095253
+Weighted spline on alcohol with balanced data (hybrid sampled) and HPO   0.9697939
+                                                                       MSE class 8
+Simple Spline on alcohol with HPO                                         4.264190
+Inverse Frequency Weighted Spline on alcohol with HPO                     4.541459
+Spline on alcohol with balanced data (hybrid sampled) and HPO             4.698471
+Weighted spline on alcohol with balanced data (hybrid sampled) and HPO    4.647960
+                                                                       Mean MSE over classes
+Simple Spline on alcohol with HPO                                                   2.432104
+Inverse Frequency Weighted Spline on alcohol with HPO                               2.053435
+Spline on alcohol with balanced data (hybrid sampled) and HPO                       2.100868
+Weighted spline on alcohol with balanced data (hybrid sampled) and HPO              2.093518
+                                                                       Total MSE
+Simple Spline on alcohol with HPO                                      0.5142776
+Inverse Frequency Weighted Spline on alcohol with HPO                  0.9749578
+Spline on alcohol with balanced data (hybrid sampled) and HPO          1.0899318
+Weighted spline on alcohol with balanced data (hybrid sampled) and HPO 1.0460384
+[1] "Minimum MSE with df =  3 :  0.633297037409525"
+[1] "MSE (Simple Spline on density with HPO): 0.633297037409525"
+[1] "Mean MSE over classes (Simple Spline on density with HPO): 2.69954163744425"
+[1] "Minimum MSE with df =  3 :  0.767976719771036"
+[1] "MSE (Inverse Frequency Weighted Spline on density with HPO): 0.767976719771036"
+[1] "Mean MSE over classes (Inverse Frequency Weighted Spline on density with HPO): 2.45272819305432"
+[1] "Minimum MSE with df =  2 :  2.24925340641732"
+[1] "MSE (Spline on density with balanced data (hybrid sampled) and HPO): 0.942382434945952"
+[1] "Mean MSE over classes (Spline on density with balanced data (hybrid sampled) and HPO): 2.44131389151195"
+[1] "Minimum MSE with df =  2 :  2.25406281612863"
+[1] "MSE (Weighted spline on density with balanced data (hybrid sampled) and HPO): 0.862500636069695"
+[1] "Mean MSE over classes (Weighted spline on density with balanced data (hybrid sampled) and HPO): 2.4092598214325"
+                                                                       MSE class 3
+Simple Spline on density with HPO                                         6.497420
+Inverse Frequency Weighted Spline on density with HPO                     4.308763
+Spline on density with balanced data (hybrid sampled) and HPO             3.190167
+Weighted spline on density with balanced data (hybrid sampled) and HPO    3.484046
+                                                                       MSE class 4
+Simple Spline on density with HPO                                         2.493784
+Inverse Frequency Weighted Spline on density with HPO                     1.705224
+Spline on density with balanced data (hybrid sampled) and HPO             1.619114
+Weighted spline on density with balanced data (hybrid sampled) and HPO    1.713829
+                                                                       MSE class 5
+Simple Spline on density with HPO                                        0.3424976
+Inverse Frequency Weighted Spline on density with HPO                    0.2077625
+Spline on density with balanced data (hybrid sampled) and HPO            0.3028108
+Weighted spline on density with balanced data (hybrid sampled) and HPO   0.2829936
+                                                                       MSE class 6
+Simple Spline on density with HPO                                        0.1654396
+Inverse Frequency Weighted Spline on density with HPO                    0.5756159
+Spline on density with balanced data (hybrid sampled) and HPO            0.8797481
+Weighted spline on density with balanced data (hybrid sampled) and HPO   0.7402784
+                                                                       MSE class 7
+Simple Spline on density with HPO                                         1.800448
+Inverse Frequency Weighted Spline on density with HPO                     2.383537
+Spline on density with balanced data (hybrid sampled) and HPO             2.542354
+Weighted spline on density with balanced data (hybrid sampled) and HPO    2.382006
+                                                                       MSE class 8
+Simple Spline on density with HPO                                         4.897661
+Inverse Frequency Weighted Spline on density with HPO                     5.535467
+Spline on density with balanced data (hybrid sampled) and HPO             6.113689
+Weighted spline on density with balanced data (hybrid sampled) and HPO    5.852405
+                                                                       Mean MSE over classes
+Simple Spline on density with HPO                                                   2.699542
+Inverse Frequency Weighted Spline on density with HPO                               2.452728
+Spline on density with balanced data (hybrid sampled) and HPO                       2.441314
+Weighted spline on density with balanced data (hybrid sampled) and HPO              2.409260
+                                                                       Total MSE
+Simple Spline on density with HPO                                      0.6332970
+Inverse Frequency Weighted Spline on density with HPO                  0.7679767
+Spline on density with balanced data (hybrid sampled) and HPO          0.9423824
+Weighted spline on density with balanced data (hybrid sampled) and HPO 0.8625006
+[1] "Minimum MSE with df =  3 :  0.671102590333482"
+[1] "MSE (Simple Spline on pH with HPO): 0.671102590333482"
+[1] "Mean MSE over classes (Simple Spline on pH with HPO): 2.84977133143262"
+[1] "Minimum MSE with df =  2 :  0.779264587566938"
+[1] "MSE (Inverse Frequency Weighted Spline on pH with HPO): 0.779264587566938"
+[1] "Mean MSE over classes (Inverse Frequency Weighted Spline on pH with HPO): 2.51117967368372"
+[1] "Minimum MSE with df =  2 :  2.4374969391702"
+[1] "MSE (Spline on pH with balanced data (hybrid sampled) and HPO): 0.885949978371513"
+[1] "Mean MSE over classes (Spline on pH with balanced data (hybrid sampled) and HPO): 2.47499612326337"
+[1] "Minimum MSE with df =  2 :  2.45463913223148"
+[1] "MSE (Weighted spline on pH with balanced data (hybrid sampled) and HPO): 0.854848744547393"
+[1] "Mean MSE over classes (Weighted spline on pH with balanced data (hybrid sampled) and HPO): 2.47921531423132"
+                                                                  MSE class 3
+Simple Spline on pH with HPO                                         6.591337
+Inverse Frequency Weighted Spline on pH with HPO                     5.041150
+Spline on pH with balanced data (hybrid sampled) and HPO             4.513478
+Weighted spline on pH with balanced data (hybrid sampled) and HPO    4.768493
+                                                                  MSE class 4
+Simple Spline on pH with HPO                                         2.593496
+Inverse Frequency Weighted Spline on pH with HPO                     2.131591
+Spline on pH with balanced data (hybrid sampled) and HPO             1.918030
+Weighted spline on pH with balanced data (hybrid sampled) and HPO    2.055386
+                                                                  MSE class 5
+Simple Spline on pH with HPO                                        0.4093480
+Inverse Frequency Weighted Spline on pH with HPO                    0.4866032
+Spline on pH with balanced data (hybrid sampled) and HPO            0.5530570
+Weighted spline on pH with balanced data (hybrid sampled) and HPO   0.5775591
+                                                                  MSE class 6
+Simple Spline on pH with HPO                                        0.1469360
+Inverse Frequency Weighted Spline on pH with HPO                    0.3706875
+Spline on pH with balanced data (hybrid sampled) and HPO            0.5474982
+Weighted spline on pH with balanced data (hybrid sampled) and HPO   0.4704213
+                                                                  MSE class 7
+Simple Spline on pH with HPO                                         1.842932
+Inverse Frequency Weighted Spline on pH with HPO                     2.030561
+Spline on pH with balanced data (hybrid sampled) and HPO             2.194319
+Weighted spline on pH with balanced data (hybrid sampled) and HPO    2.058437
+                                                                  MSE class 8
+Simple Spline on pH with HPO                                         5.514578
+Inverse Frequency Weighted Spline on pH with HPO                     5.006486
+Spline on pH with balanced data (hybrid sampled) and HPO             5.123595
+Weighted spline on pH with balanced data (hybrid sampled) and HPO    4.944996
+                                                                  Mean MSE over classes
+Simple Spline on pH with HPO                                                   2.849771
+Inverse Frequency Weighted Spline on pH with HPO                               2.511180
+Spline on pH with balanced data (hybrid sampled) and HPO                       2.474996
+Weighted spline on pH with balanced data (hybrid sampled) and HPO              2.479215
+                                                                  Total MSE
+Simple Spline on pH with HPO                                      0.6711026
+Inverse Frequency Weighted Spline on pH with HPO                  0.7792646
+Spline on pH with balanced data (hybrid sampled) and HPO          0.8859500
+Weighted spline on pH with balanced data (hybrid sampled) and HPO 0.8548487
+[1] "Minimum MSE with df =  19 :  0.66683383542501"
+[1] "MSE (Simple Spline on residual.sugar with HPO): 0.66683383542501"
+[1] "Mean MSE over classes (Simple Spline on residual.sugar with HPO): 2.78370774175445"
+[1] "Minimum MSE with df =  3 :  0.685245690866013"
+[1] "MSE (Inverse Frequency Weighted Spline on residual.sugar with HPO): 0.685245690866013"
+[1] "Mean MSE over classes (Inverse Frequency Weighted Spline on residual.sugar with HPO): 2.94783659276062"
+[1] "Minimum MSE with df =  16 :  2.67645889343569"
+[1] "MSE (Spline on residual.sugar with balanced data (hybrid sampled) and HPO): 0.826099626513073"
+[1] "Mean MSE over classes (Spline on residual.sugar with balanced data (hybrid sampled) and HPO): 2.64795749047811"
+[1] "Minimum MSE with df =  16 :  2.6759725609186"
+[1] "MSE (Weighted spline on residual.sugar with balanced data (hybrid sampled) and HPO): 0.81522791845993"
+[1] "Mean MSE over classes (Weighted spline on residual.sugar with balanced data (hybrid sampled) and HPO): 2.62803166244823"
+                                                                              MSE class 3
+Simple Spline on residual.sugar with HPO                                         6.195378
+Inverse Frequency Weighted Spline on residual.sugar with HPO                     6.639181
+Spline on residual.sugar with balanced data (hybrid sampled) and HPO             5.308983
+Weighted spline on residual.sugar with balanced data (hybrid sampled) and HPO    5.387398
+                                                                              MSE class 4
+Simple Spline on residual.sugar with HPO                                         2.551316
+Inverse Frequency Weighted Spline on residual.sugar with HPO                     2.229700
+Spline on residual.sugar with balanced data (hybrid sampled) and HPO             2.324829
+Weighted spline on residual.sugar with balanced data (hybrid sampled) and HPO    2.416979
+                                                                              MSE class 5
+Simple Spline on residual.sugar with HPO                                        0.3957254
+Inverse Frequency Weighted Spline on residual.sugar with HPO                    0.2731640
+Spline on residual.sugar with balanced data (hybrid sampled) and HPO            0.6263891
+Weighted spline on residual.sugar with balanced data (hybrid sampled) and HPO   0.6615539
+                                                                              MSE class 6
+Simple Spline on residual.sugar with HPO                                        0.1461226
+Inverse Frequency Weighted Spline on residual.sugar with HPO                    0.2536277
+Spline on residual.sugar with balanced data (hybrid sampled) and HPO            0.3090081
+Weighted spline on residual.sugar with balanced data (hybrid sampled) and HPO   0.2672964
+                                                                              MSE class 7
+Simple Spline on residual.sugar with HPO                                         1.895736
+Inverse Frequency Weighted Spline on residual.sugar with HPO                     2.149015
+Spline on residual.sugar with balanced data (hybrid sampled) and HPO             2.020923
+Weighted spline on residual.sugar with balanced data (hybrid sampled) and HPO    1.926030
+                                                                              MSE class 8
+Simple Spline on residual.sugar with HPO                                         5.517969
+Inverse Frequency Weighted Spline on residual.sugar with HPO                     6.142332
+Spline on residual.sugar with balanced data (hybrid sampled) and HPO             5.297613
+Weighted spline on residual.sugar with balanced data (hybrid sampled) and HPO    5.108932
+                                                                              Mean MSE over classes
+Simple Spline on residual.sugar with HPO                                                   2.783708
+Inverse Frequency Weighted Spline on residual.sugar with HPO                               2.947837
+Spline on residual.sugar with balanced data (hybrid sampled) and HPO                       2.647957
+Weighted spline on residual.sugar with balanced data (hybrid sampled) and HPO              2.628032
+                                                                              Total MSE
+Simple Spline on residual.sugar with HPO                                      0.6668338
+Inverse Frequency Weighted Spline on residual.sugar with HPO                  0.6852457
+Spline on residual.sugar with balanced data (hybrid sampled) and HPO          0.8260996
+Weighted spline on residual.sugar with balanced data (hybrid sampled) and HPO 0.8152279
+[1] "Minimum MSE with df =  21 :  0.539282688864236"
+[1] "MSE (Simple Spline on volatile.acidity with HPO): 0.539282688864236"
+[1] "Mean MSE over classes (Simple Spline on volatile.acidity with HPO): 1.97060367001561"
+[1] "Minimum MSE with df =  2 :  0.787889568321909"
+[1] "MSE (Inverse Frequency Weighted Spline on volatile.acidity with HPO): 0.787889568321909"
+[1] "Mean MSE over classes (Inverse Frequency Weighted Spline on volatile.acidity with HPO): 1.55982976748771"
+[1] "Minimum MSE with df =  4 :  1.25497121790785"
+[1] "MSE (Spline on volatile.acidity with balanced data (hybrid sampled) and HPO): 1.01583074499806"
+[1] "Mean MSE over classes (Spline on volatile.acidity with balanced data (hybrid sampled) and HPO): 1.45794594192902"
+[1] "Minimum MSE with df =  4 :  1.26106820810311"
+[1] "MSE (Weighted spline on volatile.acidity with balanced data (hybrid sampled) and HPO): 0.996819713817345"
+[1] "Mean MSE over classes (Weighted spline on volatile.acidity with balanced data (hybrid sampled) and HPO): 1.46433785923475"
+                                                                                MSE class 3
+Simple Spline on volatile.acidity with HPO                                         4.139863
+Inverse Frequency Weighted Spline on volatile.acidity with HPO                     2.954970
+Spline on volatile.acidity with balanced data (hybrid sampled) and HPO             2.474711
+Weighted spline on volatile.acidity with balanced data (hybrid sampled) and HPO    2.567943
+                                                                                MSE class 4
+Simple Spline on volatile.acidity with HPO                                         1.816332
+Inverse Frequency Weighted Spline on volatile.acidity with HPO                     1.599896
+Spline on volatile.acidity with balanced data (hybrid sampled) and HPO             1.514360
+Weighted spline on volatile.acidity with balanced data (hybrid sampled) and HPO    1.543952
+                                                                                MSE class 5
+Simple Spline on volatile.acidity with HPO                                        0.3652998
+Inverse Frequency Weighted Spline on volatile.acidity with HPO                    0.7576426
+Spline on volatile.acidity with balanced data (hybrid sampled) and HPO            1.0033498
+Weighted spline on volatile.acidity with balanced data (hybrid sampled) and HPO   0.9949573
+                                                                                MSE class 6
+Simple Spline on volatile.acidity with HPO                                        0.2498846
+Inverse Frequency Weighted Spline on volatile.acidity with HPO                    0.7206767
+Spline on volatile.acidity with balanced data (hybrid sampled) and HPO            1.0999969
+Weighted spline on volatile.acidity with balanced data (hybrid sampled) and HPO   1.0609287
+                                                                                MSE class 7
+Simple Spline on volatile.acidity with HPO                                        1.1127454
+Inverse Frequency Weighted Spline on volatile.acidity with HPO                    0.5263531
+Spline on volatile.acidity with balanced data (hybrid sampled) and HPO            0.4210693
+Weighted spline on volatile.acidity with balanced data (hybrid sampled) and HPO   0.4074859
+                                                                                MSE class 8
+Simple Spline on volatile.acidity with HPO                                         4.139496
+Inverse Frequency Weighted Spline on volatile.acidity with HPO                     2.799440
+Spline on volatile.acidity with balanced data (hybrid sampled) and HPO             2.234189
+Weighted spline on volatile.acidity with balanced data (hybrid sampled) and HPO    2.210760
+                                                                                Mean MSE over classes
+Simple Spline on volatile.acidity with HPO                                                   1.970604
+Inverse Frequency Weighted Spline on volatile.acidity with HPO                               1.559830
+Spline on volatile.acidity with balanced data (hybrid sampled) and HPO                       1.457946
+Weighted spline on volatile.acidity with balanced data (hybrid sampled) and HPO              1.464338
+                                                                                Total MSE
+Simple Spline on volatile.acidity with HPO                                      0.5392827
+Inverse Frequency Weighted Spline on volatile.acidity with HPO                  0.7878896
+Spline on volatile.acidity with balanced data (hybrid sampled) and HPO          1.0158307
+Weighted spline on volatile.acidity with balanced data (hybrid sampled) and HPO 0.9968197
+[1] "MSE (Weighted spline on PC1 with balanced data (hybrid sampled) and HPO): 1.11964082885915"
+[1] "Mean MSE over classes (Weighted spline on PC1 with balanced data (hybrid sampled) and HPO): 3.83630190326302"
+[1] "MSE (Inverse Frequency Weighted Spline on alcohol with HPO): 0.974957808076096"
+[1] "Mean MSE over classes (Inverse Frequency Weighted Spline on alcohol with HPO): 2.05343502809829"
+[1] "MSE (Weighted spline on density with balanced data (hybrid sampled) and HPO): 0.862500636069695"
+[1] "Mean MSE over classes (Weighted spline on density with balanced data (hybrid sampled) and HPO): 2.4092598214325"
+[1] "MSE (Spline on pH with balanced data (hybrid sampled) and HPO): 0.885949978371513"
+[1] "Mean MSE over classes (Spline on pH with balanced data (hybrid sampled) and HPO): 2.47499612326337"
+[1] "MSE (Weighted spline on residual.sugar with balanced data (hybrid sampled) and HPO): 0.81522791845993"
+[1] "Mean MSE over classes (Weighted spline on residual.sugar with balanced data (hybrid sampled) and HPO): 2.62803166244823"
+[1] "MSE (Spline on volatile.acidity with balanced data (hybrid sampled) and HPO): 1.01583074499806"
+[1] "Mean MSE over classes (Spline on volatile.acidity with balanced data (hybrid sampled) and HPO): 1.45794594192902"
+                                                                              MSE class 3
+Weighted spline on PC1 with balanced data (hybrid sampled) and HPO               6.661970
+Inverse Frequency Weighted Spline on alcohol with HPO                            3.651628
+Weighted spline on density with balanced data (hybrid sampled) and HPO           3.484046
+Spline on pH with balanced data (hybrid sampled) and HPO                         4.513478
+Weighted spline on residual.sugar with balanced data (hybrid sampled) and HPO    5.387398
+Spline on volatile.acidity with balanced data (hybrid sampled) and HPO           2.474711
+                                                                              MSE class 4
+Weighted spline on PC1 with balanced data (hybrid sampled) and HPO               2.777915
+Inverse Frequency Weighted Spline on alcohol with HPO                            1.300225
+Weighted spline on density with balanced data (hybrid sampled) and HPO           1.713829
+Spline on pH with balanced data (hybrid sampled) and HPO                         1.918030
+Weighted spline on residual.sugar with balanced data (hybrid sampled) and HPO    2.416979
+Spline on volatile.acidity with balanced data (hybrid sampled) and HPO           1.514360
+                                                                              MSE class 5
+Weighted spline on PC1 with balanced data (hybrid sampled) and HPO              0.4751193
+Inverse Frequency Weighted Spline on alcohol with HPO                           0.5939848
+Weighted spline on density with balanced data (hybrid sampled) and HPO          0.2829936
+Spline on pH with balanced data (hybrid sampled) and HPO                        0.5530570
+Weighted spline on residual.sugar with balanced data (hybrid sampled) and HPO   0.6615539
+Spline on volatile.acidity with balanced data (hybrid sampled) and HPO          1.0033498
+                                                                              MSE class 6
+Weighted spline on PC1 with balanced data (hybrid sampled) and HPO              0.6604713
+Inverse Frequency Weighted Spline on alcohol with HPO                           1.1753496
+Weighted spline on density with balanced data (hybrid sampled) and HPO          0.7402784
+Spline on pH with balanced data (hybrid sampled) and HPO                        0.5474982
+Weighted spline on residual.sugar with balanced data (hybrid sampled) and HPO   0.2672964
+Spline on volatile.acidity with balanced data (hybrid sampled) and HPO          1.0999969
+                                                                              MSE class 7
+Weighted spline on PC1 with balanced data (hybrid sampled) and HPO              3.2301834
+Inverse Frequency Weighted Spline on alcohol with HPO                           1.0579635
+Weighted spline on density with balanced data (hybrid sampled) and HPO          2.3820059
+Spline on pH with balanced data (hybrid sampled) and HPO                        2.1943186
+Weighted spline on residual.sugar with balanced data (hybrid sampled) and HPO   1.9260300
+Spline on volatile.acidity with balanced data (hybrid sampled) and HPO          0.4210693
+                                                                              MSE class 8
+Weighted spline on PC1 with balanced data (hybrid sampled) and HPO               9.212152
+Inverse Frequency Weighted Spline on alcohol with HPO                            4.541459
+Weighted spline on density with balanced data (hybrid sampled) and HPO           5.852405
+Spline on pH with balanced data (hybrid sampled) and HPO                         5.123595
+Weighted spline on residual.sugar with balanced data (hybrid sampled) and HPO    5.108932
+Spline on volatile.acidity with balanced data (hybrid sampled) and HPO           2.234189
+                                                                              Mean MSE over classes
+Weighted spline on PC1 with balanced data (hybrid sampled) and HPO                         3.836302
+Inverse Frequency Weighted Spline on alcohol with HPO                                      2.053435
+Weighted spline on density with balanced data (hybrid sampled) and HPO                     2.409260
+Spline on pH with balanced data (hybrid sampled) and HPO                                   2.474996
+Weighted spline on residual.sugar with balanced data (hybrid sampled) and HPO              2.628032
+Spline on volatile.acidity with balanced data (hybrid sampled) and HPO                     1.457946
+                                                                              Total MSE
+Weighted spline on PC1 with balanced data (hybrid sampled) and HPO            1.1196408
+Inverse Frequency Weighted Spline on alcohol with HPO                         0.9749578
+Weighted spline on density with balanced data (hybrid sampled) and HPO        0.8625006
+Spline on pH with balanced data (hybrid sampled) and HPO                      0.8859500
+Weighted spline on residual.sugar with balanced data (hybrid sampled) and HPO 0.8152279
+Spline on volatile.acidity with balanced data (hybrid sampled) and HPO        1.0158307
+[1] "MSE (Pursuit Projection Regression): 0.762757496222326"
+[1] "Mean MSE over classes (Pursuit Projection Regression): 0.926832643361894"
+[1] "MSE (Spline on volatile.acidity with balanced data (hybrid sampled) and HPO): 1.14228713154805"
+[1] "Mean MSE over classes (Spline on volatile.acidity with balanced data (hybrid sampled) and HPO): 1.82273922352422"
+                                                                       MSE class 3
+PPR with balanced data (hybrid sampled) and HPO                          0.5068616
+Spline on volatile.acidity with balanced data (hybrid sampled) and HPO   0.2524601
+                                                                       MSE class 4
+PPR with balanced data (hybrid sampled) and HPO                           1.613101
+Spline on volatile.acidity with balanced data (hybrid sampled) and HPO    1.848527
+                                                                       MSE class 5
+PPR with balanced data (hybrid sampled) and HPO                          0.4912597
+Spline on volatile.acidity with balanced data (hybrid sampled) and HPO   1.0604174
+                                                                       MSE class 6
+PPR with balanced data (hybrid sampled) and HPO                          0.9772969
+Spline on volatile.acidity with balanced data (hybrid sampled) and HPO   0.8756429
+                                                                       MSE class 7
+PPR with balanced data (hybrid sampled) and HPO                          0.6930306
+Spline on volatile.acidity with balanced data (hybrid sampled) and HPO   1.5949400
+                                                                       MSE class 8
+PPR with balanced data (hybrid sampled) and HPO                           1.279446
+Spline on volatile.acidity with balanced data (hybrid sampled) and HPO    5.304448
+                                                                       Mean MSE over classes
+PPR with balanced data (hybrid sampled) and HPO                                    0.9268326
+Spline on volatile.acidity with balanced data (hybrid sampled) and HPO             1.8227392
+                                                                       Total MSE
+PPR with balanced data (hybrid sampled) and HPO                        0.7627575
+Spline on volatile.acidity with balanced data (hybrid sampled) and HPO 1.1422871
+[1] "------------FINISHED------------"
+[1] "Final model: PPR with balanced data (hybrid sampled) and HPO"
