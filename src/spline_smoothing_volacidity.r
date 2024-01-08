@@ -56,89 +56,104 @@ print(plot)
 # ---- Perform Spline smoothing simple only with HPO ---------------------------
 
 tuning_result <- tune_spline_df(train, validation, predictor,
-    title = "Simple Spline with HPO on degrees of freedom")
+    title = paste("Simple Spline on", predictor))
 
+simple_spline_name <- paste("Simple Spline on", predictor, "with HPO")
 # Fit the model with the best number of df
 spline_simple <- smooth.spline(train[[predictor]], train[[target]], df=tuning_result$best_df)
 plot_spline_curve(spline_simple,
     train[[target]],
     train[[predictor]],
-    title = "Simple Spline with HPO on degrees of freedom",
+    title = simple_spline_name,
     xlab = predictor,
     ylab = "Quality")
 
 val_results_simple <- evaluate_model(spline_simple, validation,
-    title = "Simple Spline with HPO on degrees of freedom")
+    title = simple_spline_name)
 
 # ---- Perform Spline smoothing weighted ---------------------------------------
 
 weights <- build_weights(train)
 
 tuning_result <- tune_spline_df(train, validation, predictor, weights,
-    title = "Weighted spline smoothing")
+    title = paste("Inverse Frequency Weighted Spline on", predictor))
 
+weighted_spline_name <- paste("Inverse Frequency Weighted Spline on", predictor, "with HPO")
 spline_weighted <- smooth.spline(train[[predictor]], train[[target]], df=tuning_result$best_df, w = weights)
 plot_spline_curve(spline_weighted,
     train[[target]],
     train[[predictor]],
-    title = "Weighted spline smoothing",
+    title = weighted_spline_name,
     xlab = predictor,
     ylab = "Quality")
 
 val_results_weighted <- evaluate_model(spline_weighted, validation,
-    title = "Weighted spline smoothing")
+    title = weighted_spline_name)
 
 # ---- Perform Spline smoothing with mixed sampling ----------------------------
 
 tuning_result <- tune_spline_df(train_hybrid_sampled, validation_hybrid_sampled, predictor,
-    title = "Spline smoothing with hybrid sampled data")
+    title = paste("Spline on", predictor, "with balanced data (hybrid sampled)"))
 
+hybrid_sampled_spline_name <- paste("Spline on", predictor, "with balanced data (hybrid sampled) and HPO")
 spline_mixed_sampling <- smooth.spline(train_hybrid_sampled[[predictor]], train_hybrid_sampled[[target]], df=tuning_result$best_df)
 plot_spline_curve(spline_mixed_sampling,
     train[[target]],
     train[[predictor]],
-    title = "Spline smoothing with hybrid sampled data",
+    title = hybrid_sampled_spline_name,
     xlab = predictor,
     ylab = "Quality")
 
 val_results_mixed <- evaluate_model(spline_mixed_sampling, validation,
-    title = "Spline smoothing with hybrid sampled data")
+    title = hybrid_sampled_spline_name)
 
 # ---- Perform Spline smoothing with mixed sampling and weights ----------------
 
 weights <- build_weights(train_hybrid_sampled)
 
 tuning_result <- tune_spline_df(train_hybrid_sampled, validation_hybrid_sampled, predictor, weights,
-    title = "Weighted spline smoothing with hybrid sampled data")
+    title = paste("Weighted spline", predictor, "with balanced data (hybrid sampled)"))
 
+hybrid_sampled_weighted_spline_name <- paste("Weighted spline on", predictor, "with balanced data (hybrid sampled) and HPO")
 spline_mixed_weighted <- smooth.spline(train_hybrid_sampled[[predictor]], train_hybrid_sampled[[target]], df=tuning_result$best_df, w = weights)
 plot_spline_curve(spline_mixed_weighted,
     train[[target]],
     train[[predictor]],
-    title = "Weighted spline smoothing with hybrid sampled data",
+    title = hybrid_sampled_weighted_spline_name,
     xlab = predictor,
     ylab = "Quality")
 
 val_results_mixed_weighted <- evaluate_model(spline_mixed_weighted, validation,
-    title = "Weighted spline smoothing with hybrid sampled data")
+    title = hybrid_sampled_weighted_spline_name)
 
 # ---- Create a tables with the results ----------------------------------------
 
+# Create a list with names
+model_names <- list(
+    simple_spline_name,
+    weighted_spline_name,
+    hybrid_sampled_spline_name,
+    hybrid_sampled_weighted_spline_name
+)
+
 # Create a list with the models
 models <- list(
-    "Spline Volatile.Acidity Simple" = spline_simple,
-    "Spline Volatile.Acidity Weighted" = spline_weighted,
-    "Spline Volatile.Acidity Hybrid Sampled" = spline_mixed_sampling,
-    "Spline Volatile.Acidity Hybrid Sampled Weighted" = spline_mixed_weighted
+    spline_simple,
+    spline_weighted,
+    spline_mixed_sampling,
+    spline_mixed_weighted
 )
+names(models) <- model_names
 
 # Create a dataframe with the results
 class_mse_vectors <- list(
-    "Spline Volatile.Acidity Simple" = val_results_simple$mse_per_class,
-    "Spline Volatile.Acidity Weighted" = val_results_weighted$mse_per_class,
-    "Spline Volatile.Acidity Hybrid Sampled" = val_results_mixed$mse_per_class,
-    "Spline Volatile.Acidity Hybrid Sampled Weighted" = val_results_mixed_weighted$mse_per_class
+    val_results_simple$mse_per_class,
+    val_results_weighted$mse_per_class,
+    val_results_mixed$mse_per_class,
+    val_results_mixed_weighted$mse_per_class
 )
+names(class_mse_vectors) <- model_names
+
 val_results <- do.call(rbind, lapply(class_mse_vectors, function(x) as.data.frame(t(x))))
 rownames(val_results) <- names(class_mse_vectors)
 val_results <- cbind(val_results,

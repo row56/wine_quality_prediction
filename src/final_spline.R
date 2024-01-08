@@ -113,7 +113,7 @@ min_idx <- which.min(val_results$"Mean MSE over classes")
 final_model_name <- rownames(val_results)[min_idx]
 final_model <- models[[final_model_name]]
 
-if (grepl("PCA", final_model_name)) {
+if (grepl("PC1", final_model_name)) {
     final_transform <- pca_transform
 }
 

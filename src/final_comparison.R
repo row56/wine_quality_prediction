@@ -25,18 +25,18 @@ ppr_results <- evaluate_model(ppr_model, test,
     title = "Pursuit Projection Regression")
 
 # Get the correct test subset for the spline model
-if (grepl("PCA", spline_model_name)) {
+if (grepl("PC1", spline_model_name)) {
     test_pca <- get_pca_transformed_data(test, pca_transform)$data # nolint
     spline_test_set <- test_pca[, c("PC1", "quality")]
-} else if (grepl("Alcohol", spline_model_name)) {
+} else if (grepl("alcohol", spline_model_name)) {
     spline_test_set <- test[, c("alcohol", "quality")]
-} else if (grepl("Density", spline_model_name)) {
+} else if (grepl("density", spline_model_name)) {
     spline_test_set <- test[, c("density", "quality")]
 } else if (grepl("pH", spline_model_name)) {
     spline_test_set <- test[, c("pH", "quality")]
-} else if (grepl("Residual.Sugar", spline_model_name)) {
+} else if (grepl("residual.sugar", spline_model_name)) {
     spline_test_set <- test[, c("residual.sugar", "quality")]
-} else if (grepl("Volatile.Acidity", spline_model_name)) {
+} else if (grepl("volatile.acidity", spline_model_name)) {
     spline_test_set <- test[, c("volatile.acidity", "quality")]
 } else {
    stop("Unknown spline model name")
@@ -84,7 +84,7 @@ min_idx <- which.min(test_results$"Mean MSE over classes")
 final_model_name <- rownames(test_results)[min_idx]
 final_model <- models[[final_model_name]]
 
-if (grepl("PCA", final_model_name)) {
+if (grepl("PC1", final_model_name)) {
     final_transform <- pca_transform
 }
 

@@ -79,9 +79,10 @@ tuning_result <- tune_nterms(formula, train, validation,
 # Fit the model with the best number of terms
 ppr_simple <- ppr(formula, data = train, nterms = tuning_result$best_nterms)
 
+simple_ppr_name <- "Simple PPR with HPO"
 # Evaluate the model on the test set
 val_results_simple <- evaluate_model(ppr_simple, validation,
-    title = "Simple PPR only with HPO on nterms")
+    title = simple_ppr_name)
 
 # Maybe: The model is predicting in range between 5 and 6 often times
 # for the quality, probably since more than 80% of are data are 5 or 6.
@@ -99,9 +100,10 @@ tuning_result <- tune_nterms(formula, train, validation,
 # Fit the model with the best number of terms
 ppr_weighted <- ppr(formula, data = train, nterms = tuning_result$best_nterms)
 
+weighted_ppr_name <- "Inverse Frequency Weighted PPR with HPO"
 # Evaluate the model on the test set
 val_results_weighted <- evaluate_model(ppr_weighted, validation,
-    title = "Inverse Frequency Weighted PPR")
+    title = weighted_ppr_name)
 
 # Higher MSE, but the model is a little bit better in predicting the minority
 # classes
@@ -118,9 +120,10 @@ tuning_result <- tune_nterms(formula, train_hybrid_sampled, validation_hybrid_sa
 ppr_mixed <- ppr(formula, data = train_hybrid_sampled,
     nterms = tuning_result$best_nterms)
 
+hybrid_sampled_ppr_name <- "PPR with balanced data (hybrid sampled) and HPO"
 # Evaluate the model on the test set
 val_results_mixed <- evaluate_model(ppr_mixed, validation,
-    title = "PPR with balanced data (hybrid sampled)")
+    title = hybrid_sampled_ppr_name)
 
 # ---- Pursuit projection regression with hybrid sampling and weights -----------
 
@@ -130,33 +133,44 @@ weights <- build_weights(train_hybrid_sampled)
 
 # Tune number of terms
 tuning_result <- tune_nterms(formula, train_hybrid_sampled, validation_hybrid_sampled,
-    title = "PPR with balanced data (hybrid sampled) and weights", weights = weights)
+    title = "Weighted PPR with balanced data (hybrid sampled)", weights = weights)
 
 # Fit the model with the best number of terms
 ppr_mixed_weighted <- ppr(formula, data = train_hybrid_sampled,
     nterms = tuning_result$best_nterms, weights = weights)
 
+hybrid_sampled_weighted_ppr_name <- "Weighted PPR with balanced data (hybrid sampled) and HPO"
 # Evaluate the model on the test set
 val_results_mixed_weighted <- evaluate_model(ppr_mixed_weighted, validation,
-    title = "PPR with balanced data (hybrid sampled) and weights")
+    title = hybrid_sampled_weighted_ppr_name)
 
 # ---- Create a tables with the results ----------------------------------------
 
+model_names <- list(
+    simple_ppr_name,
+    weighted_ppr_name,
+    hybrid_sampled_ppr_name,
+    hybrid_sampled_weighted_ppr_name
+)
+
 # Create a list with the models
 models <- list(
-    "PPR Simple" = ppr_simple,
-    "PPR Weighted" = ppr_weighted,
-    "PPR Hybrid Sampled" = ppr_mixed,
-    "PPR Hybrid Sampled Weighted" = ppr_mixed_weighted
+    ppr_simple,
+    ppr_weighted,
+    ppr_mixed,
+    ppr_mixed_weighted
 )
+names(models) <- model_names
 
 # Create a dataframe with the results
 class_mse_vectors <- list(
-    "PPR Simple" = val_results_simple$mse_per_class,
-    "PPR Weighted" = val_results_weighted$mse_per_class,
-    "PPR Hybrid Sampled" = val_results_mixed$mse_per_class,
-    "PPR Hybrid Sampled Weighted" = val_results_mixed_weighted$mse_per_class
+    val_results_simple$mse_per_class,
+    val_results_weighted$mse_per_class,
+    val_results_mixed$mse_per_class,
+    val_results_mixed_weighted$mse_per_class
 )
+names(class_mse_vectors) <- model_names
+
 val_results <- do.call(rbind, lapply(class_mse_vectors, function(x) as.data.frame(t(x))))
 rownames(val_results) <- names(class_mse_vectors)
 val_results <- cbind(val_results,

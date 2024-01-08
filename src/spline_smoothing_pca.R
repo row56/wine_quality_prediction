@@ -51,27 +51,29 @@ print(plot)
 # ---- Perform Spline smoothing simple only with HPO ---------------------------
 
 tuning_result <- tune_spline_df(train_pca, validation_pca, "PC1",
-    title = "Simple Spline with HPO on degrees of freedom")
+    title = "Simple Spline on PC1")
 
+simple_spline_name <- "Simple Spline on PC1 with HPO"
 spline_simple <- smooth.spline(train_pca$PC1, train_pca$quality,
                 df = tuning_result$best_df)
 plot_spline_curve(spline_simple,
     train_pca$quality,
     train_pca$PC1,
-    title = "Simple Spline with HPO on degrees of freedom",
+    title = simple_spline_name,
     xlab = "PC1",
     ylab = "Quality")
 
 val_results_simple <- evaluate_model(spline_simple,
-    validation_pca[, c("PC1", "quality")], title = "Simple Spline with HPO on degrees of freedom")
+    validation_pca[, c("PC1", "quality")], title = simple_spline_name)
 
 # ---- Perform Spline smoothing weighted ---------------------------------------
 
 weights <- build_weights(train_pca)
 tuning_result <- tune_spline_df(train_pca, validation_pca, "PC1",
     weights = weights,
-    title = "Weighted spline smoothing")
+    title = "Inverse Frequency Weighted Spline on PC1")
 
+weighted_spline_name <- "Inverse Frequency Weighted Spline on PC1 with HPO"
 spline_weighted <- smooth.spline(train_pca$PC1,
                                  train_pca$quality,
                                  w = weights,
@@ -79,32 +81,33 @@ spline_weighted <- smooth.spline(train_pca$PC1,
 plot_spline_curve(spline_weighted,
     train_pca$quality,
     train_pca$PC1,
-    title = "Weighted spline smoothing",
+    title = weighted_spline_name,
     xlab = "PC1",
     ylab = "Quality")
 
 val_results_weighted <- evaluate_model(spline_weighted,
-    validation_pca[, c("PC1", "quality")], title = "Weighted spline smoothing")
+    validation_pca[, c("PC1", "quality")], title = weighted_spline_name)
 
 # ---- Perform Spline smoothing with mixed sampling ----------------------------
 
 tuning_result <- tune_spline_df(train_hybrid_sampled_pca, validation_hybrid_sampled_pca, "PC1",
-    title = "Spline smoothing with hybrid sampled data")
+    title = "Spline on PC1 with balanced data (hybrid sampled)")
 
+hybrid_sampled_spline_name <- "Spline on PC1 with balanced data (hybrid sampled) and HPO"
 spline_mixed_sampling <- smooth.spline(train_hybrid_sampled_pca$PC1,
                                        train_hybrid_sampled_pca$quality,
                                        df = tuning_result$best_df)
 plot_spline_curve(spline_mixed_sampling,
     train_pca$quality,
     train_pca$PC1,
-    title = "Spline smoothing with mixed sampling ",
+    title = hybrid_sampled_spline_name,
     xlab = "PC1",
     ylab = "Quality")
 
 # Transform original validation data to PCA of train_hybrid_sampled
 val <- get_pca_transformed_data(validation, hybrid_sampled_pca_result$transform)$data
 val_results_mixed <- evaluate_model(spline_mixed_sampling,
-    val[, c("PC1", "quality")], title = "Spline smoothing with mixed sampling")
+    val[, c("PC1", "quality")], title = hybrid_sampled_spline_name)
 
 # ---- Perform Spline smoothing with mixed sampling and weights ----------------
 
@@ -112,41 +115,53 @@ weights <- build_weights(train_hybrid_sampled_pca)
 
 tuning_result <- tune_spline_df(train_hybrid_sampled_pca, validation_hybrid_sampled_pca, "PC1",
     weights = weights,
-    title = "Weighted spline smoothing with hybrid sampled data")
+    title = "Weighted spline on PC1 with balanced data (hybrid sampled)")
 
-spline_mixed_sampling_weighted <- smooth.spline(train_hybrid_sampled_pca$PC1,
+hybrid_sampled_weighted_spline_name <- "Weighted spline on PC1 with balanced data (hybrid sampled) and HPO"
+spline_mixed_weighted <- smooth.spline(train_hybrid_sampled_pca$PC1,
                                                 train_hybrid_sampled_pca$quality,
                                                 w = weights,
                                                 df = tuning_result$best_df)
-plot_spline_curve(spline_mixed_sampling_weighted,
+plot_spline_curve(spline_mixed_weighted,
     train_pca$quality,
     train_pca$PC1,
-    title = "Weighted spline smoothing with hybrid sampled data",
+    title = hybrid_sampled_weighted_spline_name,
     xlab = "PC1",
     ylab = "Quality")
 
 # Transform original validation data to PCA of train_hybrid_sampled
 val <- get_pca_transformed_data(validation, hybrid_sampled_pca_result$transform)$data
-val_results_mixed_weighted <- evaluate_model(spline_mixed_sampling_weighted,
-    val[, c("PC1", "quality")], title = "Weighted spline smoothing with mixed sampling")
+val_results_mixed_weighted <- evaluate_model(spline_mixed_weighted,
+    val[, c("PC1", "quality")], title = hybrid_sampled_weighted_spline_name)
 
 # ---- Create a tables with the results ----------------------------------------
 
+# Create a list with names
+model_names <- list(
+    simple_spline_name,
+    weighted_spline_name,
+    hybrid_sampled_spline_name,
+    hybrid_sampled_weighted_spline_name
+)
+
 # Create a list with the models
 models <- list(
-    "Spline PCA Simple" = spline_simple,
-    "Spline PCA Weighted" = spline_weighted,
-    "Spline PCA Hybrid Sampled" = spline_mixed_sampling,
-    "Spline PCA Hybrid Sampled Weighted" = spline_mixed_sampling_weighted
+    spline_simple,
+    spline_weighted,
+    spline_mixed_sampling,
+    spline_mixed_weighted
 )
+names(models) <- model_names
 
 # Create a dataframe with the results
 class_mse_vectors <- list(
-    "Spline PCA Simple" = val_results_simple$mse_per_class,
-    "Spline PCA Weighted" = val_results_weighted$mse_per_class,
-    "Spline PCA Hybrid Sampled" = val_results_mixed$mse_per_class,
-    "Spline PCA Hybrid Sampled Weighted" = val_results_mixed_weighted$mse_per_class
+    val_results_simple$mse_per_class,
+    val_results_weighted$mse_per_class,
+    val_results_mixed$mse_per_class,
+    val_results_mixed_weighted$mse_per_class
 )
+names(class_mse_vectors) <- model_names
+
 val_results <- do.call(rbind, lapply(class_mse_vectors, function(x) as.data.frame(t(x))))
 rownames(val_results) <- names(class_mse_vectors)
 val_results <- cbind(val_results,
