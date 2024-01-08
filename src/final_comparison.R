@@ -20,31 +20,31 @@ source("src/helper_functions.R")
 
 # ---- Predict models on TEST --------------------------------------------------
 
+# Evaluate the pursuit projection regression model on the test set
 ppr_results <- evaluate_model(ppr_model, test,
     title = "Pursuit Projection Regression")
 
+# Get the correct test subset for the spline model
 if (grepl("PCA", spline_model_name)) {
-    validation_pca <- get_pca_transformed_data(test, pca_transform)$data # nolint
-    spline_results <- evaluate_model(spline_model, test[, c("PC1", "quality")],
-        title = "Spline smoothing with PCA")
+    test_pca <- get_pca_transformed_data(test, pca_transform)$data # nolint
+    spline_test_set <- test_pca[, c("PC1", "quality")]
 } else if (grepl("Alcohol", spline_model_name)) {
-    spline_results <- evaluate_model(spline_model, test[, c("alcohol", "quality")],
-        title = "Spline smoothing with volatile acidity")
+    spline_test_set <- test[, c("alcohol", "quality")]
 } else if (grepl("Density", spline_model_name)) {
-    spline_results <- evaluate_model(spline_model, test[, c("density", "quality")],
-        title = "Spline smoothing with density")
+    spline_test_set <- test[, c("density", "quality")]
 } else if (grepl("pH", spline_model_name)) {
-    spline_results <- evaluate_model(spline_model, test[, c("pH", "quality")],
-        title = "Spline smoothing with pH")
+    spline_test_set <- test[, c("pH", "quality")]
 } else if (grepl("Residual.Sugar", spline_model_name)) {
-    spline_results <- evaluate_model(spline_model, test[, c("residual.sugar", "quality")],
-        title = "Spline smoothing with residual sugar")
+    spline_test_set <- test[, c("residual.sugar", "quality")]
 } else if (grepl("Volatile.Acidity", spline_model_name)) {
-    spline_results <- evaluate_model(spline_model, test[, c("volatile.acidity", "quality")],
-        title = "Spline smoothing with volatile acidity")
+    spline_test_set <- test[, c("volatile.acidity", "quality")]
 } else {
    stop("Unknown spline model name")
 }
+
+# Evaluate the spline model on the test set
+spline_results <- evaluate_model(spline_model, spline_test_set,
+        title = spline_model_name)
 
 # ---- Compare models on validation --------------------------------------------
 
