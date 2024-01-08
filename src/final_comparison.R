@@ -7,7 +7,7 @@ ppr_model_name <- final_model_name
 source("src/final_spline.R")
 spline_model <- final_model
 spline_model_name <- final_model_name
-if ("PCA" %in% spline_model_name) {
+if (grepl("PCA", spline_model_name)) {
     pca_transform <- final_transform
 }
 
