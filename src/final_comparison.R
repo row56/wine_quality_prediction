@@ -22,7 +22,7 @@ source("src/helper_functions.R")
 
 # Evaluate the pursuit projection regression model on the test set
 ppr_results <- evaluate_model(ppr_model, test,
-    title = "Pursuit Projection Regression")
+    title = paste(ppr_model_name, "(TEST)"))
 
 # Get the correct test subset for the spline model
 if (grepl("PC1", spline_model_name)) {
@@ -44,7 +44,7 @@ if (grepl("PC1", spline_model_name)) {
 
 # Evaluate the spline model on the test set
 spline_results <- evaluate_model(spline_model, spline_test_set,
-        title = spline_model_name)
+        title = paste(spline_model_name, "(TEST)"))
 
 # ---- Compare models on validation --------------------------------------------
 
