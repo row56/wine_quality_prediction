@@ -57,7 +57,7 @@ tune_nterms <- function(formula, train_data, val_data, max_terms = 30,
 
 # ---- Define hybrid sampled data ----------------------------------------------
 
-target_size <- 400
+target_size <- 150
 # Apply sampling techniques to the training and validation sets
 train_hybrid_sampled <- balance_classes_hybrid_sampling(train, target_size)
 # 67 because we want to keep the same ratio between train and validation
@@ -81,7 +81,7 @@ ppr_simple <- ppr(formula, data = train, nterms = tuning_result$best_nterms)
 
 # Evaluate the model on the test set
 val_results_simple <- evaluate_model(ppr_simple, validation,
-    title = "Simple PPR with HPO on nterms")
+    title = "Simple PPR only with HPO on nterms")
 
 # Maybe: The model is predicting in range between 5 and 6 often times
 # for the quality, probably since more than 80% of are data are 5 or 6.

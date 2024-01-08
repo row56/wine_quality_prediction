@@ -12,7 +12,7 @@ source("src/helper_functions.R")
 
 # ---- Define hybrid sampled data ----------------------------------------------
 
-target_size <- 400
+target_size <- 150
 # Apply sampling techniques to the training and validation sets
 train_hybrid_sampled <- balance_classes_hybrid_sampling(train, target_size)
 # 67 because we want to keep the same ratio between train and validation
