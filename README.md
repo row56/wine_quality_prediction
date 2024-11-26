@@ -1,4 +1,7 @@
-# mltwo-project
+# Wine Quality Prediction
+
+by Vipin Singh, Paul Wecker, Robert Wienröder
+
 Regression task on quality of red wine based on the physiochemical properties of the wine.
 
 ## Project report on overleaf:
